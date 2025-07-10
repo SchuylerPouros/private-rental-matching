@@ -1,0 +1,470 @@
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.24;
+
+import { FHE, euint32, euint8, ebool, inEuint32, inEuint8 } from "@fhevm/solidity/lib/FHE.sol";
+import { Gateway } from "@fhevm/solidity/gateway/Gateway.sol";
+import { SepoliaConfig } from "@fhevm/solidity/config/ZamaConfig.sol";
+
+/**
+ * @title PrivateRentalMatching
+ * @notice Privacy-preserving rental property matching platform using FHE encryption
+ * @dev Migrated to new Gateway API with sIND-CPAD security and event-based decryption
+ */
+contract PrivateRentalMatching is SepoliaConfig {
+
+    address public owner;
+    Gateway public gateway;
+
+    uint256 public listingIdCounter;
+    uint256 public requestIdCounter;
+    uint256 public matchCounter;
+
+    // Property type constants
+    uint8 public constant APARTMENT = 1;
+    uint8 public constant HOUSE = 2;
+    uint8 public constant STUDIO = 3;
+
+    struct PropertyListing {
+        euint32 encryptedPrice;
+        euint8 encryptedBedrooms;
+        euint32 encryptedPostalCode;
+        euint8 encryptedPropertyType; // 1=apartment, 2=house, 3=studio
+        bool isActive;
+        address landlord;
+        uint256 timestamp;
+        bool isMatched;
+    }
+
+    struct RentalRequest {
+        euint32 encryptedMaxBudget;
+        euint8 encryptedMinBedrooms;
+        euint32 encryptedPreferredPostalCode;
+        euint8 encryptedPreferredPropertyType;
+        bool isActive;
+        address tenant;
+        uint256 timestamp;
+        bool isMatched;
+    }
+
+    struct Match {
+        uint256 listingId;
+        uint256 requestId;
+        address landlord;
+        address tenant;
+        uint256 timestamp;
+        bool isConfirmed;
+        bool landlordConfirmed;
+        bool tenantConfirmed;
+    }
+
+    mapping(uint256 => PropertyListing) public listings;
+    mapping(uint256 => RentalRequest) public requests;
+    mapping(uint256 => Match) public matches;
+    mapping(address => uint256[]) public userListings;
+    mapping(address => uint256[]) public userRequests;
+
+    event ListingCreated(uint256 indexed listingId, address indexed landlord);
+    event RequestCreated(uint256 indexed requestId, address indexed tenant);
+    event MatchCreated(uint256 indexed matchId, uint256 indexed listingId, uint256 indexed requestId);
+    event MatchConfirmed(uint256 indexed matchId, address indexed confirmer);
+    event ListingDeactivated(uint256 indexed listingId);
+    event RequestDeactivated(uint256 indexed requestId);
+    event DecryptionRequested(uint256 indexed requestId, address indexed requester);
+
+    modifier onlyOwner() {
+        require(msg.sender == owner, "Not authorized");
+        _;
+    }
+
+    modifier onlyActiveListing(uint256 listingId) {
+        require(listings[listingId].isActive, "Listing not active");
+        require(listings[listingId].landlord == msg.sender, "Not listing owner");
+        _;
+    }
+
+    modifier onlyActiveRequest(uint256 requestId) {
+        require(requests[requestId].isActive, "Request not active");
+        require(requests[requestId].tenant == msg.sender, "Not request owner");
+        _;
+    }
+
+    constructor(address _gatewayAddress) {
+        owner = msg.sender;
+        gateway = Gateway(_gatewayAddress);
+        listingIdCounter = 1;
+        requestIdCounter = 1;
+        matchCounter = 1;
+    }
+
+    /**
+     * @notice Create a new property listing with encrypted details
+     * @param _encPrice Encrypted price (using inEuint32)
+     * @param _encBedrooms Encrypted bedrooms count (using inEuint8)
+     * @param _encPostalCode Encrypted postal code (using inEuint32)
+     * @param _encPropertyType Encrypted property type (using inEuint8)
+     */
+    function createListing(
+        inEuint32 calldata _encPrice,
+        inEuint8 calldata _encBedrooms,
+        inEuint32 calldata _encPostalCode,
+        inEuint8 calldata _encPropertyType
+    ) external {
+        // Convert encrypted inputs with automatic re-randomization
+        euint32 encryptedPrice = FHE.asEuint32(_encPrice);
+        euint8 encryptedBedrooms = FHE.asEuint8(_encBedrooms);
+        euint32 encryptedPostalCode = FHE.asEuint32(_encPostalCode);
+        euint8 encryptedPropertyType = FHE.asEuint8(_encPropertyType);
+
+        // Validate property type (encrypted comparison)
+        ebool validType = FHE.or(
+            FHE.or(
+                FHE.eq(encryptedPropertyType, FHE.asEuint8(APARTMENT)),
+                FHE.eq(encryptedPropertyType, FHE.asEuint8(HOUSE))
+            ),
+            FHE.eq(encryptedPropertyType, FHE.asEuint8(STUDIO))
+        );
+        FHE.req(validType);
+
+        listings[listingIdCounter] = PropertyListing({
+            encryptedPrice: encryptedPrice,
+            encryptedBedrooms: encryptedBedrooms,
+            encryptedPostalCode: encryptedPostalCode,
+            encryptedPropertyType: encryptedPropertyType,
+            isActive: true,
+            landlord: msg.sender,
+            timestamp: block.timestamp,
+            isMatched: false
+        });
+
+        userListings[msg.sender].push(listingIdCounter);
+
+        // Set permissions for FHE operations (contract and landlord)
+        FHE.allowThis(encryptedPrice);
+        FHE.allowThis(encryptedBedrooms);
+        FHE.allowThis(encryptedPostalCode);
+        FHE.allowThis(encryptedPropertyType);
+
+        FHE.allow(encryptedPrice, msg.sender);
+        FHE.allow(encryptedBedrooms, msg.sender);
+        FHE.allow(encryptedPostalCode, msg.sender);
+        FHE.allow(encryptedPropertyType, msg.sender);
+
+        emit ListingCreated(listingIdCounter, msg.sender);
+        listingIdCounter++;
+    }
+
+    /**
+     * @notice Create a new rental request with encrypted preferences
+     * @param _encMaxBudget Encrypted maximum budget (using inEuint32)
+     * @param _encMinBedrooms Encrypted minimum bedrooms (using inEuint8)
+     * @param _encPreferredPostalCode Encrypted preferred postal code (using inEuint32)
+     * @param _encPreferredPropertyType Encrypted preferred property type (using inEuint8)
+     */
+    function createRequest(
+        inEuint32 calldata _encMaxBudget,
+        inEuint8 calldata _encMinBedrooms,
+        inEuint32 calldata _encPreferredPostalCode,
+        inEuint8 calldata _encPreferredPropertyType
+    ) external {
+        // Convert encrypted inputs with automatic re-randomization
+        euint32 encryptedMaxBudget = FHE.asEuint32(_encMaxBudget);
+        euint8 encryptedMinBedrooms = FHE.asEuint8(_encMinBedrooms);
+        euint32 encryptedPreferredPostalCode = FHE.asEuint32(_encPreferredPostalCode);
+        euint8 encryptedPreferredPropertyType = FHE.asEuint8(_encPreferredPropertyType);
+
+        // Validate property type (encrypted comparison)
+        ebool validType = FHE.or(
+            FHE.or(
+                FHE.eq(encryptedPreferredPropertyType, FHE.asEuint8(APARTMENT)),
+                FHE.eq(encryptedPreferredPropertyType, FHE.asEuint8(HOUSE))
+            ),
+            FHE.eq(encryptedPreferredPropertyType, FHE.asEuint8(STUDIO))
+        );
+        FHE.req(validType);
+
+        requests[requestIdCounter] = RentalRequest({
+            encryptedMaxBudget: encryptedMaxBudget,
+            encryptedMinBedrooms: encryptedMinBedrooms,
+            encryptedPreferredPostalCode: encryptedPreferredPostalCode,
+            encryptedPreferredPropertyType: encryptedPreferredPropertyType,
+            isActive: true,
+            tenant: msg.sender,
+            timestamp: block.timestamp,
+            isMatched: false
+        });
+
+        userRequests[msg.sender].push(requestIdCounter);
+
+        // Set permissions for FHE operations (contract and tenant)
+        FHE.allowThis(encryptedMaxBudget);
+        FHE.allowThis(encryptedMinBedrooms);
+        FHE.allowThis(encryptedPreferredPostalCode);
+        FHE.allowThis(encryptedPreferredPropertyType);
+
+        FHE.allow(encryptedMaxBudget, msg.sender);
+        FHE.allow(encryptedMinBedrooms, msg.sender);
+        FHE.allow(encryptedPreferredPostalCode, msg.sender);
+        FHE.allow(encryptedPreferredPropertyType, msg.sender);
+
+        emit RequestCreated(requestIdCounter, msg.sender);
+        requestIdCounter++;
+    }
+
+    /**
+     * @notice Create a match between a listing and a request using encrypted comparisons
+     * @param _listingId The ID of the property listing
+     * @param _requestId The ID of the rental request
+     * @dev Uses FHE to validate compatibility without revealing private data
+     */
+    function createMatch(uint256 _listingId, uint256 _requestId) external {
+        require(listings[_listingId].isActive, "Listing not active");
+        require(requests[_requestId].isActive, "Request not active");
+        require(!listings[_listingId].isMatched, "Listing already matched");
+        require(!requests[_requestId].isMatched, "Request already matched");
+
+        PropertyListing storage listing = listings[_listingId];
+        RentalRequest storage request = requests[_requestId];
+
+        require(
+            msg.sender == listing.landlord || msg.sender == request.tenant,
+            "Not authorized to create this match"
+        );
+
+        // Perform encrypted comparisons for matching
+        ebool priceMatch = FHE.le(listing.encryptedPrice, request.encryptedMaxBudget);
+        ebool bedroomMatch = FHE.ge(listing.encryptedBedrooms, request.encryptedMinBedrooms);
+        ebool typeMatch = FHE.eq(listing.encryptedPropertyType, request.encryptedPreferredPropertyType);
+        ebool postalMatch = FHE.eq(listing.encryptedPostalCode, request.encryptedPreferredPostalCode);
+
+        // Combine all conditions
+        ebool allMatch = FHE.and(
+            FHE.and(priceMatch, bedroomMatch),
+            FHE.and(typeMatch, postalMatch)
+        );
+
+        // Require all conditions to match
+        FHE.req(allMatch);
+
+        // Create the match
+        matches[matchCounter] = Match({
+            listingId: _listingId,
+            requestId: _requestId,
+            landlord: listing.landlord,
+            tenant: request.tenant,
+            timestamp: block.timestamp,
+            isConfirmed: false,
+            landlordConfirmed: false,
+            tenantConfirmed: false
+        });
+
+        listings[_listingId].isMatched = true;
+        requests[_requestId].isMatched = true;
+
+        emit MatchCreated(matchCounter, _listingId, _requestId);
+        matchCounter++;
+    }
+
+    /**
+     * @notice Confirm a match (landlord or tenant)
+     * @param _matchId The ID of the match to confirm
+     */
+    function confirmMatch(uint256 _matchId) external {
+        require(matches[_matchId].landlord != address(0), "Match does not exist");
+        require(!matches[_matchId].isConfirmed, "Match already confirmed");
+
+        Match storage matchData = matches[_matchId];
+
+        if (msg.sender == matchData.landlord) {
+            require(!matchData.landlordConfirmed, "Already confirmed by landlord");
+            matchData.landlordConfirmed = true;
+        } else if (msg.sender == matchData.tenant) {
+            require(!matchData.tenantConfirmed, "Already confirmed by tenant");
+            matchData.tenantConfirmed = true;
+        } else {
+            revert("Not authorized to confirm this match");
+        }
+
+        if (matchData.landlordConfirmed && matchData.tenantConfirmed) {
+            matchData.isConfirmed = true;
+        }
+
+        emit MatchConfirmed(_matchId, msg.sender);
+    }
+
+    /**
+     * @notice Deactivate a listing
+     * @param _listingId The ID of the listing to deactivate
+     */
+    function deactivateListing(uint256 _listingId) external onlyActiveListing(_listingId) {
+        listings[_listingId].isActive = false;
+        emit ListingDeactivated(_listingId);
+    }
+
+    /**
+     * @notice Deactivate a request
+     * @param _requestId The ID of the request to deactivate
+     */
+    function deactivateRequest(uint256 _requestId) external onlyActiveRequest(_requestId) {
+        requests[_requestId].isActive = false;
+        emit RequestDeactivated(_requestId);
+    }
+
+    // View functions
+
+    /**
+     * @notice Get user's listings
+     * @param _user The address of the user
+     * @return Array of listing IDs
+     */
+    function getUserListings(address _user) external view returns (uint256[] memory) {
+        return userListings[_user];
+    }
+
+    /**
+     * @notice Get user's requests
+     * @param _user The address of the user
+     * @return Array of request IDs
+     */
+    function getUserRequests(address _user) external view returns (uint256[] memory) {
+        return userRequests[_user];
+    }
+
+    /**
+     * @notice Get match details
+     * @param _matchId The ID of the match
+     * @return listingId Listing ID
+     * @return requestId Request ID
+     * @return landlord Landlord address
+     * @return tenant Tenant address
+     * @return timestamp Match creation time
+     * @return isConfirmed Whether both parties confirmed
+     * @return landlordConfirmed Whether landlord confirmed
+     * @return tenantConfirmed Whether tenant confirmed
+     */
+    function getMatchDetails(uint256 _matchId) external view returns (
+        uint256 listingId,
+        uint256 requestId,
+        address landlord,
+        address tenant,
+        uint256 timestamp,
+        bool isConfirmed,
+        bool landlordConfirmed,
+        bool tenantConfirmed
+    ) {
+        Match storage matchData = matches[_matchId];
+        return (
+            matchData.listingId,
+            matchData.requestId,
+            matchData.landlord,
+            matchData.tenant,
+            matchData.timestamp,
+            matchData.isConfirmed,
+            matchData.landlordConfirmed,
+            matchData.tenantConfirmed
+        );
+    }
+
+    /**
+     * @notice Get count of active listings
+     * @return Count of active and unmatched listings
+     */
+    function getActiveListingsCount() external view returns (uint256) {
+        uint256 count = 0;
+        for (uint256 i = 1; i < listingIdCounter; i++) {
+            if (listings[i].isActive && !listings[i].isMatched) {
+                count++;
+            }
+        }
+        return count;
+    }
+
+    /**
+     * @notice Get count of active requests
+     * @return Count of active and unmatched requests
+     */
+    function getActiveRequestsCount() external view returns (uint256) {
+        uint256 count = 0;
+        for (uint256 i = 1; i < requestIdCounter; i++) {
+            if (requests[i].isActive && !requests[i].isMatched) {
+                count++;
+            }
+        }
+        return count;
+    }
+
+    /**
+     * @notice Get listing details (public information only)
+     * @param _listingId The ID of the listing
+     * @return isActive Whether the listing is active
+     * @return landlord The landlord's address
+     * @return timestamp When the listing was created
+     * @return isMatched Whether the listing has been matched
+     */
+    function getListingDetails(uint256 _listingId) external view returns (
+        bool isActive,
+        address landlord,
+        uint256 timestamp,
+        bool isMatched
+    ) {
+        PropertyListing storage listing = listings[_listingId];
+        return (
+            listing.isActive,
+            listing.landlord,
+            listing.timestamp,
+            listing.isMatched
+        );
+    }
+
+    /**
+     * @notice Get request details (public information only)
+     * @param _requestId The ID of the request
+     * @return isActive Whether the request is active
+     * @return tenant The tenant's address
+     * @return timestamp When the request was created
+     * @return isMatched Whether the request has been matched
+     */
+    function getRequestDetails(uint256 _requestId) external view returns (
+        bool isActive,
+        address tenant,
+        uint256 timestamp,
+        isMatched
+    ) {
+        RentalRequest storage request = requests[_requestId];
+        return (
+            request.isActive,
+            request.tenant,
+            request.timestamp,
+            request.isMatched
+        );
+    }
+
+    /**
+     * @notice Check if a match can be created between a listing and request
+     * @param _listingId The ID of the property listing
+     * @param _requestId The ID of the rental request
+     * @return ebool Encrypted boolean result of the match check
+     */
+    function checkCompatibility(uint256 _listingId, uint256 _requestId) external view returns (ebool) {
+        PropertyListing storage listing = listings[_listingId];
+        RentalRequest storage request = requests[_requestId];
+
+        ebool priceMatch = FHE.le(listing.encryptedPrice, request.encryptedMaxBudget);
+        ebool bedroomMatch = FHE.ge(listing.encryptedBedrooms, request.encryptedMinBedrooms);
+        ebool typeMatch = FHE.eq(listing.encryptedPropertyType, request.encryptedPreferredPropertyType);
+        ebool postalMatch = FHE.eq(listing.encryptedPostalCode, request.encryptedPreferredPostalCode);
+
+        return FHE.and(
+            FHE.and(priceMatch, bedroomMatch),
+            FHE.and(typeMatch, postalMatch)
+        );
+    }
+
+    /**
+     * @notice Update the Gateway contract address (only owner)
+     * @param _newGateway New Gateway contract address
+     */
+    function updateGateway(address _newGateway) external onlyOwner {
+        require(_newGateway != address(0), "Invalid gateway address");
+        gateway = Gateway(_newGateway);
+    }
+}
