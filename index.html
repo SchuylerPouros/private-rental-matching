@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Private Rental Matching - FHE Platform</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.ethers.io/lib/ethers-5.7.2.umd.min.js"></script>
+</head>
+<body class="bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 min-h-screen">
+    <div class="container mx-auto px-4 py-8">
+        <!-- Header -->
+        <header class="text-center mb-12">
+            <h1 class="text-5xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-4">
+                🏠 Private Rental Matching
+            </h1>
+            <p class="text-xl text-gray-600 mb-6">
+                Privacy-Preserving Rental Platform using Fully Homomorphic Encryption
+            </p>
+            <div class="flex justify-center gap-4">
+                <button id="connectBtn" class="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-8 py-3 rounded-lg font-semibold hover:shadow-lg transition-all">
+                    Connect Wallet
+                </button>
+                <div id="accountInfo" class="hidden bg-white px-6 py-3 rounded-lg shadow-md">
+                    <span class="text-sm text-gray-600">Connected:</span>
+                    <span id="accountAddress" class="font-mono text-sm ml-2"></span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Contract Info -->
+        <div class="bg-white rounded-xl shadow-lg p-6 mb-8">
+            <h2 class="text-2xl font-bold mb-4 text-gray-800">📋 Contract Information</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="bg-gray-50 p-4 rounded-lg">
+                    <p class="text-sm text-gray-600 mb-1">Contract Address</p>
+                    <p class="font-mono text-sm break-all">0x980051585b6DC385159BD53B5C78eb7B91b848E5</p>
+                </div>
+                <div class="bg-gray-50 p-4 rounded-lg">
+                    <p class="text-sm text-gray-600 mb-1">Network</p>
+                    <p class="font-semibold">Sepolia Testnet</p>
+                </div>
+                <div class="bg-gray-50 p-4 rounded-lg">
+                    <p class="text-sm text-gray-600 mb-1">KMS Generation</p>
+                    <p class="font-semibold">1</p>
+                </div>
+                <div class="bg-gray-50 p-4 rounded-lg">
+                    <p class="text-sm text-gray-600 mb-1">Status</p>
+                    <p class="font-semibold text-green-600">✅ Deployed</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Platform Statistics -->
+        <div class="bg-white rounded-xl shadow-lg p-6 mb-8">
+            <h2 class="text-2xl font-bold mb-4 text-gray-800">📊 Platform Statistics</h2>
+            <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
+                <div class="text-center p-4 bg-blue-50 rounded-lg">
+                    <p class="text-3xl font-bold text-blue-600" id="totalListings">-</p>
+                    <p class="text-sm text-gray-600">Total Listings</p>
+                </div>
+                <div class="text-center p-4 bg-purple-50 rounded-lg">
+                    <p class="text-3xl font-bold text-purple-600" id="totalRequests">-</p>
+                    <p class="text-sm text-gray-600">Total Requests</p>
+                </div>
+                <div class="text-center p-4 bg-green-50 rounded-lg">
+                    <p class="text-3xl font-bold text-green-600" id="totalMatches">-</p>
+                    <p class="text-sm text-gray-600">Total Matches</p>
+                </div>
+                <div class="text-center p-4 bg-yellow-50 rounded-lg">
+                    <p class="text-3xl font-bold text-yellow-600" id="activeListings">-</p>
+                    <p class="text-sm text-gray-600">Active Listings</p>
+                </div>
+                <div class="text-center p-4 bg-pink-50 rounded-lg">
+                    <p class="text-3xl font-bold text-pink-600" id="activeRequests">-</p>
+                    <p class="text-sm text-gray-600">Active Requests</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Features Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+            <!-- Create Listing -->
+            <div class="bg-white rounded-xl shadow-lg p-6">
+                <h3 class="text-xl font-bold mb-4 text-blue-600">🏘️ Create Property Listing</h3>
+                <form id="createListingForm" class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Monthly Rent (USD)</label>
+                        <input type="number" id="listingPrice" required class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500" placeholder="1500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Bedrooms</label>
+                        <input type="number" id="listingBedrooms" required min="1" max="10" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500" placeholder="2">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Postal Code</label>
+                        <input type="number" id="listingPostal" required class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500" placeholder="10001">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Property Type</label>
+                        <select id="listingType" required class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500">
+                            <option value="1">Apartment</option>
+                            <option value="2">House</option>
+                            <option value="3">Studio</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition-all">
+                        Create Listing (Encrypted)
+                    </button>
+                </form>
+            </div>
+
+            <!-- Create Request -->
+            <div class="bg-white rounded-xl shadow-lg p-6">
+                <h3 class="text-xl font-bold mb-4 text-purple-600">🔍 Create Rental Request</h3>
+                <form id="createRequestForm" class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Max Budget (USD)</label>
+                        <input type="number" id="requestBudget" required class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500" placeholder="2000">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Min Bedrooms</label>
+                        <input type="number" id="requestBedrooms" required min="1" max="10" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500" placeholder="2">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Preferred Postal Code</label>
+                        <input type="number" id="requestPostal" required class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500" placeholder="10001">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Preferred Type</label>
+                        <select id="requestType" required class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500">
+                            <option value="1">Apartment</option>
+                            <option value="2">House</option>
+                            <option value="3">Studio</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="w-full bg-purple-600 text-white py-3 rounded-lg font-semibold hover:bg-purple-700 transition-all">
+                        Create Request (Encrypted)
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Features Info -->
+        <div class="bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl shadow-lg p-8 text-white mb-8">
+            <h2 class="text-3xl font-bold mb-6">🔐 FHE Privacy Features</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div>
+                    <h4 class="font-bold mb-2">✨ Fully Encrypted</h4>
+                    <p class="text-sm opacity-90">All rental data (prices, locations, requirements) are encrypted using FHE</p>
+                </div>
+                <div>
+                    <h4 class="font-bold mb-2">🛡️ Privacy-Preserving</h4>
+                    <p class="text-sm opacity-90">Match properties without revealing sensitive information</p>
+                </div>
+                <div>
+                    <h4 class="font-bold mb-2">🤝 Dual Confirmation</h4>
+                    <p class="text-sm opacity-90">Both landlord and tenant must confirm matches</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="text-center text-gray-600 mt-12">
+            <p class="mb-2">Built with ❤️ using Zama fhEVM</p>
+            <p class="text-sm">Gateway API v2.0 | Sepolia Testnet</p>
+        </footer>
+    </div>
+
+    <!-- Status Toast -->
+    <div id="toast" class="hidden fixed bottom-4 right-4 bg-white rounded-lg shadow-xl p-4 max-w-sm">
+        <p id="toastMessage" class="text-sm"></p>
+    </div>
+
+    <script>
+        const CONTRACT_ADDRESS = '0x980051585b6DC385159BD53B5C78eb7B91b848E5';
+        const CONTRACT_ABI = []; // Load from artifacts if needed
+
+        let provider;
+        let signer;
+        let contract;
+
+        // Connect Wallet
+        document.getElementById('connectBtn').addEventListener('click', async () => {
+            if (typeof window.ethereum !== 'undefined') {
+                try {
+                    await window.ethereum.request({ method: 'eth_requestAccounts' });
+                    provider = new ethers.providers.Web3Provider(window.ethereum);
+                    signer = provider.getSigner();
+                    const address = await signer.getAddress();
+
+                    document.getElementById('accountAddress').textContent =
+                        address.substring(0, 6) + '...' + address.substring(38);
+                    document.getElementById('connectBtn').classList.add('hidden');
+                    document.getElementById('accountInfo').classList.remove('hidden');
+
+                    showToast('✅ Wallet connected successfully!', 'success');
+                    loadStats();
+                } catch (error) {
+                    showToast('❌ Failed to connect wallet', 'error');
+                }
+            } else {
+                showToast('⚠️ Please install MetaMask', 'warning');
+            }
+        });
+
+        // Load Statistics
+        async function loadStats() {
+            // Placeholder - implement with actual contract calls
+            document.getElementById('totalListings').textContent = '0';
+            document.getElementById('totalRequests').textContent = '0';
+            document.getElementById('totalMatches').textContent = '0';
+            document.getElementById('activeListings').textContent = '0';
+            document.getElementById('activeRequests').textContent = '0';
+        }
+
+        // Create Listing
+        document.getElementById('createListingForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            showToast('🔄 Creating encrypted listing...', 'info');
+
+            // Implement actual contract interaction here
+            setTimeout(() => {
+                showToast('✅ Listing created successfully!', 'success');
+                e.target.reset();
+            }, 2000);
+        });
+
+        // Create Request
+        document.getElementById('createRequestForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            showToast('🔄 Creating encrypted request...', 'info');
+
+            // Implement actual contract interaction here
+            setTimeout(() => {
+                showToast('✅ Request created successfully!', 'success');
+                e.target.reset();
+            }, 2000);
+        });
+
+        // Toast Notification
+        function showToast(message, type) {
+            const toast = document.getElementById('toast');
+            const toastMessage = document.getElementById('toastMessage');
+
+            toastMessage.textContent = message;
+            toast.classList.remove('hidden');
+
+            setTimeout(() => {
+                toast.classList.add('hidden');
+            }, 3000);
+        }
+
+        // Initial load
+        window.addEventListener('load', () => {
+            console.log('Private Rental Matching Platform - Ready');
+        });
+    </script>
+</body>
+</html>

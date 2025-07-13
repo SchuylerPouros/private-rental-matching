@@ -1,0 +1,70 @@
+{
+  "name": "private-rental-matching",
+  "version": "1.0.0",
+  "description": "Privacy-preserving rental property matching platform using FHE encryption",
+  "private": true,
+  "scripts": {
+    "dev": "next dev -p 1221",
+    "build": "next build",
+    "start": "next start -p 1221",
+    "lint": "next lint",
+    "compile": "npx hardhat compile",
+    "deploy": "npx hardhat run scripts/deploy.ts --network sepolia",
+    "test": "npx hardhat test",
+    "clean": "npx hardhat clean"
+  },
+  "keywords": [
+    "fhevm",
+    "zama",
+    "fhe",
+    "homomorphic-encryption",
+    "ethereum",
+    "web3",
+    "privacy",
+    "rental-matching",
+    "real-estate"
+  ],
+  "author": "Private Rental Matching Team",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
+  },
+  "dependencies": {
+    "@rainbow-me/rainbowkit": "^2.1.0",
+    "@tanstack/react-query": "^5.0.0",
+    "fhevmjs": "^0.5.0",
+    "next": "^14.2.0",
+    "react": "^18.3.0",
+    "react-dom": "^18.3.0",
+    "viem": "^2.0.0",
+    "wagmi": "^2.12.0"
+  },
+  "devDependencies": {
+    "@fhevm/solidity": "^0.9.0-1",
+    "@nomicfoundation/hardhat-chai-matchers": "^2.1.0",
+    "@nomicfoundation/hardhat-ethers": "^3.1.0",
+    "@nomicfoundation/hardhat-network-helpers": "^1.1.0",
+    "@nomicfoundation/hardhat-toolbox": "^4.0.0",
+    "@nomicfoundation/hardhat-verify": "^2.1.1",
+    "@typechain/ethers-v6": "^0.5.1",
+    "@typechain/hardhat": "^9.1.0",
+    "@types/node": "^20.0.0",
+    "@types/react": "^18.3.0",
+    "@types/react-dom": "^18.3.0",
+    "autoprefixer": "^10.4.0",
+    "chai": "^4.5.0",
+    "dotenv": "^16.3.1",
+    "eslint": "^8.0.0",
+    "eslint-config-next": "^14.2.0",
+    "ethers": "^6.15.0",
+    "hardhat": "^2.19.5",
+    "hardhat-gas-reporter": "^1.0.10",
+    "postcss": "^8.4.0",
+    "solidity-coverage": "^0.8.16",
+    "tailwindcss": "^3.4.0",
+    "ts-node": "^10.9.2",
+    "typechain": "^8.3.2",
+    "typescript": "^5.0.0"
+  }
+}
