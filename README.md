@@ -1,6 +1,18 @@
-# Private Rental Matching Platform
+# 🏠 Anonymous Rental Matching Platform
 
-A privacy-preserving rental property matching platform built with Fully Homomorphic Encryption (FHE) using Zama's fhEVM. This platform enables landlords and tenants to find compatible matches without revealing sensitive information like rental prices, locations, or preferences until both parties consent.
+## 🎯 Core Concept
+
+**Privacy-Preserving Tenant-Landlord Matching with Full Identity Protection**
+
+Using Fully Homomorphic Encryption (FHE) technology powered by Zama's fhEVM, this platform enables completely anonymous matching between landlords and tenants. All sensitive information (rental prices, locations, preferences) is encrypted on-chain and only revealed after both parties confirm the match, ensuring true privacy protection for all users.
+
+---
+
+## 🔗 Links
+
+- **Live Demo**: [https://private-rental-matching.vercel.app/](https://private-rental-matching.vercel.app/)
+- **GitHub Repository**: [https://github.com/SchuylerPouros/private-rental-matching](https://github.com/SchuylerPouros/private-rental-matching)
+- **Demo Video**: [demo.mp4]
 
 ## 🌟 Features
 
@@ -24,7 +36,7 @@ A privacy-preserving rental property matching platform built with Fully Homomorp
 
 ```bash
 # Clone the repository
-git clone <repository-url>
+git clone https://github.com/SchuylerPouros/private-rental-matching.git
 cd private-rental-matching
 
 # Install dependencies
@@ -76,9 +88,16 @@ private-rental-matching/
 │   ├── page.tsx
 │   └── providers.tsx
 ├── public/                 # Static assets
+├── deploy-final/           # Production build (for GitHub Pages)
+│   ├── _next/              # Next.js static files
+│   ├── index.html          # Main entry point
+│   ├── 404.html            # 404 page
+│   └── .nojekyll           # Disable Jekyll on GitHub Pages
 ├── hardhat.config.ts       # Hardhat configuration
+├── next.config.js          # Next.js configuration
 ├── package.json            # Dependencies and scripts
-└── README.md              # This file
+├── demo.mp4                # Demo video
+└── README.md               # This file
 ```
 
 ## 🔧 Configuration
