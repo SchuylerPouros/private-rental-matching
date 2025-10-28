@@ -1,0 +1,11 @@
+module.exports = {
+  istanbulReporter: ["html", "lcov", "text", "json"],
+  skipFiles: ["test", "scripts"],
+  mocha: {
+    grep: "@skip-on-coverage",
+    invert: true,
+  },
+  providerOptions: {
+    mnemonic: "test test test test test test test test test test test junk",
+  },
+};
