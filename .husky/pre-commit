@@ -1,0 +1,14 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+# Run lint-staged for automatic code quality checks
+npx lint-staged
+
+# Run security checks
+echo "Running security checks..."
+npm run security:check || {
+  echo "Security checks failed! Please fix the issues before committing."
+  exit 1
+}
+
+echo "Pre-commit hooks passed successfully!"

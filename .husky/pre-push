@@ -1,0 +1,18 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+# Run tests before push
+echo "Running tests before push..."
+npm test || {
+  echo "Tests failed! Please fix failing tests before pushing."
+  exit 1
+}
+
+# Run compilation check
+echo "Checking contract compilation..."
+npm run compile || {
+  echo "Compilation failed! Please fix compilation errors before pushing."
+  exit 1
+}
+
+echo "Pre-push hooks passed successfully!"
