@@ -1,0 +1,23 @@
+
+> private-rental-matching@1.0.0 test
+> hardhat test
+
+
+  PrivateRentalMatching
+    Deployment
+
+      1) "before each" hook for "Should set the right owner"
+
+
+  0 passing (834ms)
+  1 failing
+
+  1) PrivateRentalMatching
+       "before each" hook for "Should set the right owner":
+     Error: incorrect number of arguments to constructor
+      at ContractFactory.getDeployTransaction (node_modules\ethers\src.ts\contract\factory.ts:87:19)
+      at ContractFactory.deploy (node_modules\ethers\src.ts\contract\factory.ts:105:31)
+      at Context.<anonymous> (test\PrivateRentalMatching.test.ts:22:51)
+
+
+

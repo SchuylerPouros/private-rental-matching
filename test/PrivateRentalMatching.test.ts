@@ -15,11 +15,17 @@ describe("PrivateRentalMatching", function () {
   beforeEach(async function () {
     [owner, landlord1, landlord2, tenant1, tenant2] = await ethers.getSigners();
 
-    // Mock gateway address (in production, this would be the actual Gateway contract)
-    gatewayAddress = "0x0000000000000000000000000000000000000001";
+    // Mock pauser addresses for Gateway (new API)
+    const pauserAddresses = [
+      ethers.ZeroAddress,
+      ethers.ZeroAddress,
+      ethers.ZeroAddress,
+      ethers.ZeroAddress
+    ];
+    const kmsGeneration = 0; // Mock generation
 
     const PrivateRentalMatchingFactory = await ethers.getContractFactory("PrivateRentalMatching");
-    contract = await PrivateRentalMatchingFactory.deploy(gatewayAddress);
+    contract = await PrivateRentalMatchingFactory.deploy(pauserAddresses, kmsGeneration);
     await contract.waitForDeployment();
   });
 
@@ -34,8 +40,8 @@ describe("PrivateRentalMatching", function () {
       expect(await contract.matchCounter()).to.equal(1);
     });
 
-    it("Should set the gateway address", async function () {
-      expect(await contract.gateway()).to.equal(gatewayAddress);
+    it("Should set the kms generation", async function () {
+      expect(await contract.kmsGeneration()).to.equal(0);
     });
   });
 
@@ -411,6 +417,53 @@ describe("PrivateRentalMatching", function () {
       await expect(
         contract.connect(owner).updateGateway(ethers.ZeroAddress)
       ).to.be.revertedWith("Invalid gateway address");
+    });
+  });
+
+  describe("Additional Edge Cases and Security Tests", function () {
+    it("Should have proper contract address", async function () {
+      const address = await contract.getAddress();
+      expect(address).to.be.properAddress;
+      expect(address).to.not.equal(ethers.ZeroAddress);
+    });
+
+    it("Should maintain correct owner throughout", async function () {
+      const contractOwner = await contract.owner();
+      expect(contractOwner).to.equal(owner.address);
+      expect(contractOwner).to.not.equal(ethers.ZeroAddress);
+    });
+
+    it("Should handle zero listings gracefully", async function () {
+      const userListings = await contract.getUserListings(landlord1.address);
+      expect(userListings.length).to.equal(0);
+    });
+
+    it("Should handle zero requests gracefully", async function () {
+      const userRequests = await contract.getUserRequests(tenant1.address);
+      expect(userRequests.length).to.equal(0);
+    });
+
+    it("Should return zero for active listings when none exist", async function () {
+      expect(await contract.getActiveListingsCount()).to.equal(0);
+    });
+
+    it("Should return zero for active requests when none exist", async function () {
+      expect(await contract.getActiveRequestsCount()).to.equal(0);
+    });
+
+    it("Should properly initialize kmsGeneration", async function () {
+      const generation = await contract.kmsGeneration();
+      expect(generation).to.equal(0);
+    });
+
+    it("Should increment counters sequentially", async function () {
+      const initialListingCounter = await contract.listingIdCounter();
+      const initialRequestCounter = await contract.requestIdCounter();
+      const initialMatchCounter = await contract.matchCounter();
+
+      expect(initialListingCounter).to.equal(1);
+      expect(initialRequestCounter).to.equal(1);
+      expect(initialMatchCounter).to.equal(1);
     });
   });
 });

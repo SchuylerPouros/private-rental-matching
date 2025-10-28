@@ -7,11 +7,28 @@
     "dev": "next dev -p 1221",
     "build": "next build",
     "start": "next start -p 1221",
-    "lint": "next lint",
-    "compile": "npx hardhat compile",
-    "deploy": "npx hardhat run scripts/deploy.ts --network sepolia",
-    "test": "npx hardhat test",
-    "clean": "npx hardhat clean"
+    "lint": "eslint . --ext .ts,.tsx",
+    "lint:fix": "eslint . --ext .ts,.tsx --fix",
+    "lint:sol": "solhint --max-warnings 0 \"contracts/**/*.sol\"",
+    "lint:sol:fix": "solhint --max-warnings 0 \"contracts/**/*.sol\" --fix",
+    "prettier:check": "prettier --check \"**/*.{js,json,md,sol,ts,tsx,yml}\"",
+    "prettier:write": "prettier --write \"**/*.{js,json,md,sol,ts,tsx,yml}\"",
+    "compile": "hardhat compile",
+    "test": "hardhat test",
+    "test:coverage": "hardhat coverage",
+    "clean": "hardhat clean",
+    "coverage": "hardhat coverage",
+    "deploy:sepolia": "hardhat run scripts/deploy.js --network sepolia",
+    "deploy:localhost": "hardhat run scripts/deploy.js --network localhost",
+    "verify": "hardhat run scripts/verify.js --network sepolia",
+    "interact": "hardhat run scripts/interact.js --network sepolia",
+    "interact:localhost": "hardhat run scripts/interact.js --network localhost",
+    "simulate": "hardhat run scripts/simulate.js --network hardhat",
+    "node": "hardhat node",
+    "typechain": "hardhat typechain",
+    "prepare": "husky install",
+    "security:check": "npm audit --audit-level=moderate && npm run lint:sol",
+    "performance:check": "REPORT_GAS=true npm test"
   },
   "keywords": [
     "fhevm",
@@ -52,19 +69,42 @@
     "@types/node": "^20.0.0",
     "@types/react": "^18.3.0",
     "@types/react-dom": "^18.3.0",
+    "@typescript-eslint/eslint-plugin": "^6.0.0",
+    "@typescript-eslint/parser": "^6.0.0",
+    "@zama-fhe/oracle-solidity": "^0.2.0",
     "autoprefixer": "^10.4.0",
     "chai": "^4.5.0",
     "dotenv": "^16.3.1",
     "eslint": "^8.0.0",
     "eslint-config-next": "^14.2.0",
+    "eslint-config-prettier": "^9.0.0",
+    "eslint-plugin-prettier": "^5.0.0",
     "ethers": "^6.15.0",
     "hardhat": "^2.19.5",
     "hardhat-gas-reporter": "^1.0.10",
     "postcss": "^8.4.0",
+    "prettier": "^3.0.0",
+    "prettier-plugin-solidity": "^1.2.0",
+    "solhint": "^4.0.0",
     "solidity-coverage": "^0.8.16",
     "tailwindcss": "^3.4.0",
     "ts-node": "^10.9.2",
     "typechain": "^8.3.2",
-    "typescript": "^5.0.0"
+    "typescript": "^5.0.0",
+    "husky": "^8.0.0",
+    "lint-staged": "^15.0.0"
+  },
+  "lint-staged": {
+    "*.{ts,tsx,js}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.sol": [
+      "solhint --fix",
+      "prettier --write"
+    ],
+    "*.{json,md,yml}": [
+      "prettier --write"
+    ]
   }
 }
