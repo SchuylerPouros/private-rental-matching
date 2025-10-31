@@ -1,254 +1,325 @@
-# Quick Start Guide
+# Quick Start Guide - FHEVM React Template
 
-Get the Private Rental Matching platform running in 5 minutes!
+## 🚀 Get Started in 5 Minutes
+
+This guide will help you get the rental matching React application running quickly.
 
 ## Prerequisites Check
 
+Before starting, ensure you have:
+
 ```bash
-# Check Node.js version (need >= 18)
+# Check Node.js version (need >= 18.0.0)
 node --version
 
-# Check npm
+# Check npm version (need >= 9.0.0)
 npm --version
 
-# Check you have a wallet with Sepolia ETH
-# Get free Sepolia ETH: https://sepoliafaucet.com/
+# Install MetaMask browser extension
+# Get some Sepolia testnet ETH
 ```
 
-## Step 1: Clone & Install (1 minute)
+## Quick Start Commands
+
+### Option 1: Run React App Only
 
 ```bash
-cd private-rental-matching
+# Navigate to the React app
+cd D:\zamadapp\dapp122\fhevm-react-template\examples\rental-matching-react
+
+# Install dependencies
 npm install
-```
 
-## Step 2: Configure Environment (2 minutes)
-
-```bash
-# Copy environment template
-cp .env.example .env
-
-# Edit .env file - MINIMUM REQUIRED:
-nano .env
-```
-
-Add these required values:
-```env
-SEPOLIA_RPC_URL=https://sepolia.infura.io/v3/YOUR_PROJECT_ID
-PRIVATE_KEY=your_private_key_here
-GATEWAY_CONTRACT_ADDRESS=0xZAMA_GATEWAY_ADDRESS
-NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID=your_project_id
-```
-
-## Step 3: Compile & Test (1 minute)
-
-```bash
-# Compile contracts
-npm run compile
-
-# Run tests (optional but recommended)
-npm run test
-```
-
-## Step 4: Deploy Contract (30 seconds)
-
-```bash
-# Deploy to Sepolia testnet
-npm run deploy
-
-# Copy the deployed contract address from output
-# Example: 0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb
-```
-
-## Step 5: Update Frontend Config (30 seconds)
-
-```bash
-# Edit .env and add deployed contract address
-nano .env
-```
-
-Add:
-```env
-NEXT_PUBLIC_CONTRACT_ADDRESS=0xYOUR_DEPLOYED_CONTRACT_ADDRESS
-```
-
-## Step 6: Start Application (30 seconds)
-
-```bash
 # Start development server
 npm run dev
 ```
 
-Visit: http://localhost:3000
+Open http://localhost:3000 in your browser.
 
-## 🎉 You're Done!
+### Option 2: Run from Root (All Examples)
 
-You should now see:
-1. Beautiful landing page
-2. "Connect Wallet" button
-3. After connecting, you can:
-   - Create property listings
-   - Create rental requests
-   - Match properties
-   - Confirm matches
+```bash
+# Navigate to project root
+cd D:\zamadapp\dapp122\fhevm-react-template
 
-## Common Issues & Solutions
+# Install all dependencies
+npm install
 
-### "Insufficient funds"
-**Solution**: Get Sepolia ETH from https://sepoliafaucet.com/
+# Run the React app
+npm run dev --workspace=rental-matching-react
+```
 
-### "Cannot find module"
-**Solution**: Run `npm install` again
+## First Time Setup
 
-### "Network error"
-**Solution**: Check your RPC URL in .env
+### 1. Configure MetaMask
 
-### "Contract not found"
-**Solution**: Verify NEXT_PUBLIC_CONTRACT_ADDRESS in .env
+1. **Install MetaMask**
+   - Download from https://metamask.io
 
-### "Transaction failed"
-**Solution**:
-- Check you're on Sepolia network in MetaMask
-- Ensure you have enough gas
+2. **Add Sepolia Network**
+   - Network Name: `Sepolia`
+   - RPC URL: `https://sepolia.infura.io/v3/YOUR_KEY`
+   - Chain ID: `11155111`
+   - Currency: `SepoliaETH`
 
-## Test the Application
+3. **Get Test ETH**
+   - Visit https://sepoliafaucet.com/
+   - Enter your address
+   - Wait for ETH to arrive
 
-### Create a Test Listing
+### 2. Connect to the App
 
-1. Connect wallet
-2. Fill in "Create Property Listing" form:
+1. Open http://localhost:3000
+2. Click "Connect MetaMask Wallet"
+3. Approve the connection
+4. You should see your address displayed
+
+### 3. Try Creating a Listing
+
+1. Fill in the "Create Property Listing" form:
    - Monthly Rent: `1500`
    - Bedrooms: `2`
    - Postal Code: `10001`
    - Property Type: `Apartment`
-3. Click "Create Encrypted Listing"
-4. Approve transaction in MetaMask
 
-### Create a Test Request
+2. Click "Create Encrypted Listing"
+3. Confirm the transaction in MetaMask
+4. Wait for confirmation
+5. See your listing in "Your Activity"
 
-1. Fill in "Create Rental Request" form:
-   - Max Budget: `1800`
-   - Min Bedrooms: `2`
-   - Preferred Postal: `10001`
-   - Property Type: `Apartment`
-2. Click "Create Encrypted Request"
-3. Approve transaction
+## Project Structure Overview
 
-### Create a Match
-
-1. Note your listing ID (shows in "Your Activity")
-2. Note a request ID you want to match
-3. Enter both IDs in "Match Properties" section
-4. Click "Create Match"
-5. Both parties must confirm for final match
-
-## Development Commands
-
-```bash
-# Compile contracts
-npm run compile
-
-# Run tests
-npm run test
-
-# Run tests with coverage
-npm run test:coverage
-
-# Deploy to Sepolia
-npm run deploy
-
-# Start frontend development
-npm run dev
-
-# Build frontend for production
-npm run build
-
-# Start production server
-npm start
-
-# Interact with deployed contract (CLI)
-npm run interact
-
-# Setup gateway configuration
-npm run setup-gateway
+```
+rental-matching-react/
+├── src/
+│   ├── components/      # React components
+│   ├── hooks/          # Custom hooks
+│   ├── lib/            # Utilities
+│   ├── App.tsx         # Main app
+│   └── main.tsx        # Entry point
+├── package.json        # Dependencies
+└── vite.config.ts      # Vite config
 ```
 
-## Production Checklist
+## Available Examples
 
-Before going to production:
+This repository contains three example implementations:
 
-- [ ] Security audit completed
-- [ ] All tests passing
-- [ ] Environment variables secured
-- [ ] Frontend built and tested
-- [ ] Contract verified on Etherscan
-- [ ] Gateway properly configured
-- [ ] Documentation reviewed
-- [ ] Backup strategy in place
-- [ ] Monitoring set up
-- [ ] Legal compliance checked
+### 1. Next.js Demo (`examples/nextjs-demo/`)
+Full-featured Next.js 14 app with FHEVM SDK integration.
 
-## Next Steps
+```bash
+npm run dev:nextjs
+```
 
-1. **Read Full Documentation**
-   - [README.md](./README.md) - Overview
-   - [DEPLOYMENT_GUIDE.md](./DEPLOYMENT_GUIDE.md) - Detailed deployment
-   - [ARCHITECTURE.md](./ARCHITECTURE.md) - System design
+### 2. React Rental Matching (`examples/rental-matching-react/`)
+Modern React app for rental matching (this guide).
 
-2. **Explore the Code**
-   - `contracts/` - Smart contracts
-   - `test/` - Test suite
-   - `app/` - Frontend components
-   - `scripts/` - Utility scripts
+```bash
+cd examples/rental-matching-react
+npm run dev
+```
 
-3. **Customize**
-   - Modify styles in `app/globals.css`
-   - Add features in `contracts/`
-   - Enhance UI in `app/components/`
+### 3. HTML Rental Matching (`examples/RentalMatching/`)
+Simple HTML/JS version for quick deployment.
 
-4. **Deploy to Production**
-   - Follow [DEPLOYMENT_GUIDE.md](./DEPLOYMENT_GUIDE.md)
-   - Set up monitoring
-   - Configure production environment
+Open `index.html` in a browser.
 
-## Help & Support
+## Common Tasks
 
-- 📖 Check [README.md](./README.md) for details
-- 🏗️ See [ARCHITECTURE.md](./ARCHITECTURE.md) for system design
-- 🚀 Read [DEPLOYMENT_GUIDE.md](./DEPLOYMENT_GUIDE.md) for deployment
-- 💬 Open GitHub issue for bugs
-- 🌐 Visit [Zama Documentation](https://docs.zama.ai/fhevm)
+### Build for Production
+
+```bash
+npm run build
+npm run preview
+```
+
+### Run Linter
+
+```bash
+npm run lint
+```
+
+### Clean Install
+
+```bash
+# Windows PowerShell
+Remove-Item -Path node_modules -Recurse -Force
+Remove-Item -Path package-lock.json -Force
+npm install
+
+# Unix/Mac
+rm -rf node_modules package-lock.json
+npm install
+```
 
 ## Troubleshooting
 
-### Frontend won't start
+### Port 3000 Already in Use
+
+Edit `vite.config.ts`:
+```typescript
+server: {
+  port: 3001  // Change to any available port
+}
+```
+
+### "Cannot find module" Error
+
 ```bash
-rm -rf .next node_modules
+# Clear cache and reinstall
+npm cache clean --force
+rm -rf node_modules package-lock.json
 npm install
+```
+
+### MetaMask Not Connecting
+
+1. Refresh the page
+2. Make sure MetaMask is unlocked
+3. Try disconnecting and reconnecting
+4. Check browser console for errors
+
+### Transaction Failing
+
+1. Make sure you're on Sepolia testnet
+2. Check you have enough Sepolia ETH
+3. Try increasing gas limit in MetaMask
+4. Wait a moment and try again
+
+## Smart Contract Information
+
+**Contract Address**: `0xAe4aE413A41b03273Ba7ae927140Ca7a924cBFfE`
+
+**Network**: Sepolia Testnet
+
+**Functions**:
+- `createListing()` - Create encrypted property listing
+- `createRequest()` - Create encrypted rental request
+- `createMatch()` - Match listing with request
+- `confirmMatch()` - Confirm a match
+
+**View Functions**:
+- `getActiveListingsCount()`
+- `getActiveRequestsCount()`
+- `getUserListings(address)`
+- `getUserRequests(address)`
+
+## Key Features
+
+✅ **Privacy-Preserving** - FHE encryption for sensitive data
+✅ **Modern React** - React 18 with TypeScript
+✅ **Fast Development** - Vite with HMR
+✅ **Type-Safe** - Full TypeScript support
+✅ **Responsive** - Works on all devices
+✅ **Real-time** - Event-driven updates
+
+## Next Steps
+
+After getting the app running:
+
+1. **Explore the Code**
+   - Check out `src/App.tsx` for the main logic
+   - Look at `src/hooks/` for custom hooks
+   - Review `src/components/` for UI components
+
+2. **Read the Documentation**
+   - `README.md` - Project overview
+   - `INSTALLATION.md` - Detailed setup
+   - `REACT_MIGRATION_SUMMARY.md` - Migration details
+
+3. **Try All Features**
+   - Create multiple listings
+   - Create rental requests
+   - Match listings with requests
+   - View statistics and activity
+
+4. **Customize**
+   - Modify styles in `src/index.css`
+   - Add new components
+   - Extend functionality
+   - Deploy to production
+
+## Useful Links
+
+| Resource | URL |
+|----------|-----|
+| **GitHub Repository** | [Your Repo URL] |
+| **Contract Explorer** | https://sepolia.etherscan.io/address/0xAe4aE413A41b03273Ba7ae927140Ca7a924cBFfE |
+| **Sepolia Faucet** | https://sepoliafaucet.com/ |
+| **MetaMask** | https://metamask.io |
+| **Vite Docs** | https://vitejs.dev |
+| **React Docs** | https://react.dev |
+
+## Getting Help
+
+If you encounter issues:
+
+1. Check this quick start guide
+2. Review the troubleshooting section
+3. Check browser console for errors
+4. Read the detailed documentation
+5. Open an issue on GitHub
+
+## Development Tips
+
+### Hot Reload
+Changes to files in `src/` will automatically reload the browser.
+
+### TypeScript Errors
+TypeScript errors will show in the terminal and browser console.
+
+### Component Development
+Create new components in `src/components/` and import them in `App.tsx`.
+
+### Styling
+Modify `src/index.css` for global styles or add component-specific styles.
+
+### Testing
+Test your changes by:
+1. Creating listings
+2. Creating requests
+3. Creating matches
+4. Checking events fire correctly
+
+## Quick Commands Reference
+
+```bash
+# Install dependencies
+npm install
+
+# Start dev server
 npm run dev
+
+# Build for production
+npm run build
+
+# Preview production build
+npm run preview
+
+# Run linter
+npm run lint
+
+# Clean and reinstall
+rm -rf node_modules package-lock.json && npm install
 ```
 
-### Contracts won't compile
-```bash
-rm -rf cache artifacts
-npm run compile
-```
+## Success Checklist
 
-### Tests failing
-```bash
-# Make sure you're on correct node version
-node --version  # Should be >= 18
+After following this guide, you should have:
 
-# Reinstall dependencies
-rm -rf node_modules
-npm install
+- [x] Node.js and npm installed
+- [x] MetaMask extension installed
+- [x] Sepolia testnet configured
+- [x] Sepolia ETH in wallet
+- [x] Dependencies installed
+- [x] Dev server running
+- [x] App accessible in browser
+- [x] Wallet connected to app
+- [x] Successfully created a listing
 
-# Run tests
-npm test
-```
+**Congratulations! You're ready to build with FHEVM! 🎉**
 
 ---
 
-**Happy Building! 🚀**
-
-If you get stuck, check the full documentation or open an issue.
+**Need more help?** Check out the detailed documentation in the repository.

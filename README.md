@@ -1,1061 +1,1663 @@
-# 🏠 Private Rental Matching Platform
+# Universal FHEVM SDK - Fully Homomorphic Encryption for Web3
 
-> **Privacy-preserving tenant-landlord matching using Fully Homomorphic Encryption (FHE) on Zama fhEVM**
+> Production-ready FHEVM SDK for building privacy-preserving decentralized applications
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Solidity](https://img.shields.io/badge/Solidity-0.8.24-blue.svg)](https://soliditylang.org/)
-[![Hardhat](https://img.shields.io/badge/Hardhat-2.19.5-orange.svg)](https://hardhat.org/)
-[![Next.js](https://img.shields.io/badge/Next.js-14.2-black.svg)](https://nextjs.org/)
-
-A decentralized rental matching platform where all sensitive information (rental prices, locations, personal preferences) remains encrypted on-chain. Built with Zama's fhEVM technology for true privacy-preserving property matching.
+A comprehensive SDK and template collection for integrating Zama's fhEVM technology into your blockchain applications. This project provides framework-agnostic core utilities, React hooks, and complete examples demonstrating privacy-preserving smart contract interactions.
 
 ---
 
-## 🌐 Live Demo
+## What is This?
 
-**Live Application**: [Live](https://private-rental-matching.vercel.app/)
+This repository contains:
+1. **Universal FHEVM SDK** (`packages/fhevm-sdk`): A reusable, framework-agnostic SDK for FHE encryption/decryption
+2. **Example Templates**: Next.js demonstrations with complete SDK integration
+3. **Smart Contracts**: Example FHE-enabled contracts
+4. **Complete Documentation**: Everything you need to get started
 
-**Demo Video**: [demo.mp4] 
+**Live Demo**: [https://private-rental-matching.vercel.app/](https://private-rental-matching.vercel.app/)
 
-**Smart Contract**: [0x980051585b6DC385159BD53B5C78eb7B91b848E5](https://sepolia.etherscan.io/address/0x980051585b6DC385159BD53B5C78eb7B91b848E5)
-
-**Network**: Sepolia Testnet (Chain ID: 11155111)
-
-**Verified Source Code**: [View on Etherscan](https://sepolia.etherscan.io/address/0x980051585b6DC385159BD53B5C78eb7B91b848E5#code)
-
----
-
-## ✨ Features
-
-### 🔐 Privacy-First Design
-- **End-to-End Encryption**: All sensitive data encrypted using Fully Homomorphic Encryption (FHE)
-- **Anonymous Matching**: Match properties with requests without revealing private details
-- **Selective Disclosure**: Information revealed only after mutual consent
-
-### 🏗️ FHE Integration
-- **Encrypted Storage**: `euint32` for prices/postal codes, `euint8` for property attributes
-- **Homomorphic Operations**: Perform computations on encrypted data using `FHE.eq()`, `FHE.and()`, `FHE.select()`
-- **New Gateway API**: Integrated with Zama's latest Gateway for enhanced security (sIND-CPAD)
-
-### 💼 Core Functionality
-- **Property Listings**: Landlords create encrypted listings with price, bedrooms, location, type
-- **Rental Requests**: Tenants submit encrypted search criteria and budget
-- **Smart Matching**: Automated FHE-based compatibility checks
-- **Two-Party Confirmation**: Secure agreement system requiring both parties' consent
-
-### 🛠️ Developer Experience
-- **Complete Test Suite**: 46 test cases covering all scenarios
-- **CI/CD Pipeline**: Automated testing with GitHub Actions
-- **Security Tooling**: Solhint, ESLint, Prettier, Husky pre-commit hooks
-- **Gas Optimization**: Monitoring and analysis tools included
+**Demo Videos**: Available in repository root (demo1.mp4, demo2.mp4, demo3.mp4)
 
 ---
 
-## 🏗️ Architecture
-
-```
-┌─────────────────────────────────────────────────────┐
-│                  Frontend Layer                     │
-│  Next.js 14 + React + TypeScript + RainbowKit      │
-├─────────────────────────────────────────────────────┤
-│  - MetaMask wallet integration                      │
-│  - Client-side FHE encryption (fhevmjs)            │
-│  - Real-time encrypted data display                 │
-│  - Wagmi hooks for contract interaction            │
-└─────────────────────┬───────────────────────────────┘
-                      │
-                      ▼
-┌─────────────────────────────────────────────────────┐
-│              Smart Contract Layer                   │
-│    PrivateRentalMatching.sol (Solidity 0.8.24)    │
-├─────────────────────────────────────────────────────┤
-│  - Encrypted data storage (euint32, euint8)        │
-│  - Homomorphic matching logic                       │
-│  - Access control & authorization                   │
-│  - Two-party confirmation system                    │
-└─────────────────────┬───────────────────────────────┘
-                      │
-                      ▼
-┌─────────────────────────────────────────────────────┐
-│                  Zama fhEVM Layer                   │
-│         Fully Homomorphic Encryption Engine         │
-├─────────────────────────────────────────────────────┤
-│  - FHE operations on encrypted data                 │
-│  - Gateway for secure decryption                    │
-│  - KMS for key management                           │
-│  - Sepolia testnet deployment                       │
-└─────────────────────────────────────────────────────┘
-```
-
-### Data Flow
-
-```
-Landlord                          Tenant
-   │                                │
-   ├─ Create Listing                ├─ Create Request
-   │  (encrypt: price, location)    │  (encrypt: budget, preferences)
-   │                                │
-   └─────────▼────────────┬─────────┘
-           Smart Contract
-           (FHE Matching)
-                 │
-                 ├─ FHE.eq(price, budget)
-                 ├─ FHE.eq(bedrooms, minBedrooms)
-                 ├─ FHE.eq(postalCode, preferredPostalCode)
-                 │
-                 ▼
-           Match Created
-                 │
-         ┌───────┴───────┐
-         │               │
-    Landlord         Tenant
-    Confirms         Confirms
-         │               │
-         └───────┬───────┘
-                 ▼
-        Match Finalized
-   (Details Revealed to Both)
-```
-
----
-
-## 🚀 Quick Start
+## Quick Start
 
 ### Prerequisites
-
-```bash
-# Required software
-Node.js >= 18.0.0
-npm >= 8.0.0
-Git
-
-# Required accounts
-MetaMask wallet
-Sepolia testnet ETH (from faucet)
-Alchemy API key (for RPC)
-Etherscan API key (for verification)
-WalletConnect Project ID
-```
+- Node.js >= 18.0.0
+- npm or yarn
+- MetaMask wallet
+- Sepolia testnet ETH
 
 ### Installation
 
 ```bash
-# 1. Clone repository
-git clone https://github.com/YourUsername/private-rental-matching.git
-cd private-rental-matching
+# Clone the repository
+git clone <your-repository-url>
+cd fhevm-react-template
 
-# 2. Install dependencies
+# Install all packages from root
 npm install
+```
 
-# 3. Set up environment
-cp .env.example .env
-# Edit .env with your configuration (see Configuration section)
+### Compile and Deploy Contracts
 
-# 4. Compile contracts
+```bash
+# Compile Solidity contracts
 npm run compile
 
-# 5. Run tests
-npm test
+# Deploy to Sepolia testnet
+npm run deploy
 
-# 6. Deploy to Sepolia (optional - already deployed)
-npm run deploy:sepolia
+# ABI is automatically generated in artifacts/
+```
 
-# 7. Start development server
+### Launch Frontend Template
+
+```bash
+# Start Next.js demo (recommended)
+npm run dev:nextjs
+
+# Or navigate to the example directory
+cd examples/nextjs-demo
+npm install
 npm run dev
 ```
 
-Visit `http://localhost:1221` in your browser.
+Visit `http://localhost:3000` to see the application running!
 
 ---
 
-## 📋 Usage Guide
+## Project Structure
 
-### For Landlords: Creating a Property Listing
-
-1. **Connect Wallet**
-   ```
-   Click "Connect Wallet" → Select MetaMask
-   ```
-
-2. **Create Encrypted Listing**
-   ```
-   Navigate to "Create Listing" section
-   Enter property details:
-   - Monthly rent (e.g., 1500 USD)
-   - Number of bedrooms (e.g., 2)
-   - Postal code (e.g., 10001)
-   - Property type (Apartment/House/Studio)
-
-   Click "Create Encrypted Listing"
-   Confirm transaction in MetaMask
-   ```
-
-3. **View Your Listings**
-   ```
-   Check "My Listings" section
-   All your listings appear with IDs
-   ```
-
-4. **Create and Confirm Matches**
-   ```
-   When a compatible request is found:
-   → Create match by entering Listing ID + Request ID
-   → Confirm match to finalize
-   ```
-
-### For Tenants: Finding a Property
-
-1. **Connect Wallet**
-   ```
-   Click "Connect Wallet" → Select MetaMask
-   ```
-
-2. **Create Encrypted Request**
-   ```
-   Navigate to "Create Request" section
-   Enter search criteria:
-   - Maximum budget (e.g., 2000 USD)
-   - Minimum bedrooms (e.g., 2)
-   - Preferred postal code (e.g., 10001)
-   - Preferred property type
-
-   Click "Create Encrypted Request"
-   Confirm transaction in MetaMask
-   ```
-
-3. **Match with Listings**
-   ```
-   Browse compatible listings
-   Create match with desired property
-   Confirm match to complete
-   ```
+```
+fhevm-react-template/
+├── packages/
+│   └── fhevm-sdk/                    # Universal SDK Package
+│       ├── src/
+│       │   ├── core/                 # Framework-agnostic core
+│       │   │   ├── client.ts         # Main SDK client
+│       │   │   └── index.ts
+│       │   ├── react/                # React hooks and adapters
+│       │   │   ├── hooks/
+│       │   │   │   ├── useFhevm.ts
+│       │   │   │   ├── useEncrypt.ts
+│       │   │   │   └── useDecrypt.ts
+│       │   │   ├── provider.tsx
+│       │   │   └── index.ts
+│       │   ├── adapters/             # Framework adapters
+│       │   │   ├── vue.ts            # Vue 3 composables
+│       │   │   └── index.ts
+│       │   ├── utils/                # Utility functions
+│       │   │   ├── encryption.ts     # Encryption utilities
+│       │   │   ├── decryption.ts     # Decryption utilities
+│       │   │   └── index.ts
+│       │   └── types/                # TypeScript definitions
+│       ├── package.json
+│       ├── tsconfig.json
+│       └── README.md
+│
+├── examples/
+│   ├── nextjs-demo/                  # Next.js 14 demonstration
+│   │   ├── src/
+│   │   │   ├── app/                  # App Router (Next.js 14)
+│   │   │   │   ├── layout.tsx        # Root layout
+│   │   │   │   ├── page.tsx          # Main demo page
+│   │   │   │   ├── providers.tsx     # FHEVM Provider setup
+│   │   │   │   └── api/              # API routes
+│   │   │   │       ├── fhe/
+│   │   │   │       │   ├── route.ts  # FHE operations route
+│   │   │   │       │   ├── encrypt/route.ts  # Encryption endpoint
+│   │   │   │       │   ├── decrypt/route.ts  # Decryption endpoint
+│   │   │   │       │   └── compute/route.ts  # Computation endpoint
+│   │   │   │       └── keys/route.ts # Key management
+│   │   │   ├── components/           # React components
+│   │   │   │   ├── ui/               # Base UI components
+│   │   │   │   │   ├── Button.tsx
+│   │   │   │   │   ├── Input.tsx
+│   │   │   │   │   └── Card.tsx
+│   │   │   │   ├── fhe/              # FHE feature components
+│   │   │   │   │   ├── FHEProvider.tsx
+│   │   │   │   │   ├── EncryptionDemo.tsx
+│   │   │   │   │   ├── ComputationDemo.tsx
+│   │   │   │   │   └── KeyManager.tsx
+│   │   │   │   └── examples/         # Use case examples
+│   │   │   │       ├── BankingExample.tsx
+│   │   │   │       └── MedicalExample.tsx
+│   │   │   ├── lib/                  # Utility libraries
+│   │   │   │   ├── fhe/              # FHE integration
+│   │   │   │   │   ├── client.ts     # Client-side FHE
+│   │   │   │   │   ├── server.ts     # Server-side FHE
+│   │   │   │   │   ├── keys.ts       # Key management
+│   │   │   │   │   └── types.ts      # Type definitions
+│   │   │   │   └── utils/            # Utility functions
+│   │   │   │       ├── security.ts   # Security utilities
+│   │   │   │       └── validation.ts # Validation utilities
+│   │   │   ├── hooks/                # Custom hooks
+│   │   │   │   ├── useFHE.ts
+│   │   │   │   ├── useEncryption.ts
+│   │   │   │   └── useComputation.ts
+│   │   │   ├── types/                # TypeScript types
+│   │   │   │   ├── fhe.ts
+│   │   │   │   └── api.ts
+│   │   │   └── styles/               # Style files
+│   │   │       └── globals.css
+│   │   ├── package.json
+│   │   └── README.md
+│   ├── rental-matching-react/        # React rental platform
+│   │   ├── src/
+│   │   │   ├── components/           # React components
+│   │   │   │   ├── WalletInfo.tsx    # Wallet connection UI
+│   │   │   │   ├── CreateListing.tsx # Create listing form
+│   │   │   │   ├── CreateRequest.tsx # Create request form
+│   │   │   │   ├── CreateMatch.tsx   # Match creation
+│   │   │   │   ├── Statistics.tsx    # Platform stats
+│   │   │   │   ├── UserActivity.tsx  # User's listings/requests
+│   │   │   │   └── StatusBar.tsx     # Status messages
+│   │   │   ├── hooks/                # Custom React hooks
+│   │   │   │   ├── useWallet.ts      # Wallet connection hook
+│   │   │   │   └── useContract.ts    # Contract interaction hook
+│   │   │   ├── lib/                  # Utility libraries
+│   │   │   │   └── contract.ts       # Contract ABI and types
+│   │   │   ├── App.tsx               # Main app component
+│   │   │   ├── main.tsx              # Entry point
+│   │   │   ├── index.css             # Global styles
+│   │   │   └── vite-env.d.ts         # Type declarations
+│   │   ├── index.html                # HTML template
+│   │   ├── vite.config.ts            # Vite configuration
+│   │   ├── tsconfig.json             # TypeScript config
+│   │   ├── package.json              # Dependencies
+│   │   └── README.md                 # Project documentation
+│   ├── RentalMatching/               # HTML rental platform
+│   └── README.md                     # Examples documentation
+│
+├── contracts/                        # Example FHE contracts
+│   ├── PrivateRentalMatching.sol
+│   └── README.md
+│
+├── scripts/                          # Deployment scripts
+│   ├── deploy.ts
+│   └── README.md
+│
+├── test/                             # Contract tests
+│   └── PrivateRentalMatching.test.ts
+│
+├── hardhat.config.ts                 # Hardhat configuration
+├── package.json                      # Root package.json
+├── README.md                         # This file
+├── BOUNTY_SUBMISSION.md              # Bounty submission details
+└── SETUP_GUIDE.md                    # Detailed setup guide
+```
 
 ---
 
-## 🔧 Technical Implementation
+## Key Features
 
-### FHE Encryption Types
+### Universal SDK Package
+- Framework-Agnostic Core: Use with React, Vue, Angular, or vanilla JS
+- Type-Safe: Full TypeScript support with comprehensive types
+- Modular API: Import only what you need
+- Wagmi-like Design: Familiar hook patterns for React developers
+- Zero Dependencies: Core has no external dependencies
 
-The smart contract uses Zama's encrypted data types:
+### Encryption and Decryption
+- Easy Encryption: Simple encrypt helper functions
+- Batch Operations: Encrypt multiple values at once
+- User Decryption: EIP-712 signature-based decryption
+- Public Decryption: No-signature decryption for public data
+- Automatic Verification: Built-in ciphertext validation
 
-```solidity
-// Encrypted integers for prices and postal codes
-euint32 encryptedPrice;      // Rental price
-euint32 encryptedPostalCode; // Location
+### Developer Experience
+- React Hooks: `useFhevm()`, `useEncrypt()`, `useDecrypt()`
+- Ready Components: Copy-paste encryption/decryption components
+- Error Handling: Graceful error messages and retry logic
+- Loading States: Built-in loading indicators
+- IntelliSense: Full autocomplete support
 
-// Encrypted small integers for attributes
-euint8 encryptedBedrooms;    // Number of bedrooms (1-10)
-euint8 encryptedPropertyType; // 1=Apartment, 2=House, 3=Studio
+### Production Ready
+- Tested: Comprehensive test suite
+- Documented: JSDoc comments on all public APIs
+- Deployed: Live demo on Vercel
+- Optimized: Tree-shakeable for minimal bundle size
+
+---
+
+## 💻 SDK Integration Guide
+
+### Installation
+
+```bash
+# Install the SDK package
+npm install @fhevm/sdk
+
+# Or use it from the workspace
+npm install @fhevm/sdk@workspace:*
 ```
 
-### Homomorphic Operations
-
-```solidity
-// Example: Encrypted matching logic
-function createMatch(uint256 listingId, uint256 requestId) public {
-    Listing storage listing = listings[listingId];
-    Request storage request = requests[requestId];
-
-    // Compare encrypted price with budget (on encrypted data!)
-    ebool priceMatch = FHE.lte(listing.price, request.maxBudget);
-
-    // Compare encrypted bedrooms (on encrypted data!)
-    ebool bedroomMatch = FHE.gte(listing.bedrooms, request.minBedrooms);
-
-    // Compare encrypted postal code (on encrypted data!)
-    ebool locationMatch = FHE.eq(listing.postalCode, request.preferredPostalCode);
-
-    // Combine conditions (all on encrypted data!)
-    ebool isCompatible = FHE.and(
-        priceMatch,
-        FHE.and(bedroomMatch, locationMatch)
-    );
-
-    // Require match (decrypts boolean for validation)
-    require(FHE.decrypt(isCompatible), "Properties do not match");
-
-    // Create match record
-    matches.push(Match({
-        listingId: listingId,
-        requestId: requestId,
-        landlord: listing.owner,
-        tenant: request.owner,
-        timestamp: block.timestamp,
-        isConfirmed: false,
-        landlordConfirmed: false,
-        tenantConfirmed: false
-    }));
-}
-```
-
-### Frontend Integration
+### Basic SDK Usage (Vanilla JS/TypeScript)
 
 ```typescript
-// React hook for creating encrypted listing
-import { useWriteContract, useWaitForTransactionReceipt } from 'wagmi';
-import { contractABI, contractAddress } from './config/contract';
+import { initFhevm } from '@fhevm/sdk/core';
 
-function CreateListingForm() {
-  const { writeContract, data: hash } = useWriteContract();
-  const { isLoading, isSuccess } = useWaitForTransactionReceipt({ hash });
+// Initialize the FHEVM SDK
+const fhevm = await initFhevm({
+  network: 'sepolia',
+  gatewayUrl: 'https://gateway.zama.ai',
+  debug: false,
+});
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+// Encrypt a value
+const encrypted = await fhevm.encrypt(1234, 'euint32');
+console.log('Ciphertext:', encrypted.ciphertext);
+console.log('Type:', encrypted.type);
 
-    writeContract({
-      address: contractAddress,
-      abi: contractABI,
-      functionName: 'createListing',
-      args: [
-        parseInt(price),      // Will be encrypted by fhEVM
-        parseInt(bedrooms),   // Will be encrypted by fhEVM
-        parseInt(postalCode), // Will be encrypted by fhEVM
-        parseInt(propertyType) // Will be encrypted by fhEVM
-      ]
-    });
+// Public decrypt (no signature required)
+const decrypted = await fhevm.publicDecrypt(encrypted.ciphertext, 'euint32');
+console.log('Decrypted value:', decrypted.value);
+```
+
+### React Integration with Hooks
+
+The SDK provides powerful React hooks for seamless integration:
+
+```typescript
+'use client';
+
+import { useFhevm, useEncrypt, useDecrypt } from '@fhevm/sdk/react';
+import { useState } from 'react';
+
+function EncryptionExample() {
+  const { isInitialized, isInitializing } = useFhevm();
+  const { encrypt, isEncrypting, result: encryptResult } = useEncrypt();
+  const { publicDecrypt, isDecrypting, result: decryptResult } = useDecrypt();
+
+  const [value, setValue] = useState('42');
+
+  const handleEncrypt = async () => {
+    try {
+      await encrypt(Number(value), 'euint32');
+    } catch (error) {
+      console.error('Encryption failed:', error);
+    }
   };
 
+  const handleDecrypt = async () => {
+    if (!encryptResult) return;
+    try {
+      await publicDecrypt(encryptResult.ciphertext, 'euint32');
+    } catch (error) {
+      console.error('Decryption failed:', error);
+    }
+  };
+
+  if (isInitializing) return <div>Initializing FHEVM SDK...</div>;
+  if (!isInitialized) return <div>Failed to initialize SDK</div>;
+
   return (
-    <form onSubmit={handleSubmit}>
-      {/* Form fields */}
-      <button type="submit" disabled={isLoading}>
-        {isLoading ? 'Creating...' : 'Create Encrypted Listing'}
+    <div>
+      <input
+        type="number"
+        value={value}
+        onChange={(e) => setValue(e.target.value)}
+        placeholder="Enter a number"
+      />
+
+      <button onClick={handleEncrypt} disabled={isEncrypting}>
+        {isEncrypting ? 'Encrypting...' : 'Encrypt Value'}
       </button>
-      {isSuccess && <p>✅ Listing created successfully!</p>}
-    </form>
+
+      {encryptResult && (
+        <div>
+          <p>Encrypted: {encryptResult.ciphertext}</p>
+          <button onClick={handleDecrypt} disabled={isDecrypting}>
+            {isDecrypting ? 'Decrypting...' : 'Decrypt'}
+          </button>
+        </div>
+      )}
+
+      {decryptResult && (
+        <div>
+          <p>Decrypted value: {decryptResult.value.toString()}</p>
+        </div>
+      )}
+    </div>
   );
 }
 ```
 
----
+### Setting Up the React Provider
 
-## 🔐 Privacy Model
+Wrap your application with the `FhevmProvider`:
 
-### What's Private (Encrypted On-Chain)
+```typescript
+'use client';
 
-✅ **Individual rental prices** - Encrypted using FHE, only accessible to authorized parties
-✅ **Property locations** - Postal codes encrypted, not publicly visible
-✅ **User preferences** - Budget, bedroom requirements, location preferences all encrypted
-✅ **Matching criteria** - Compatibility checks performed on encrypted data
+import { ReactNode } from 'react';
+import { FhevmProvider } from '@fhevm/sdk/react';
 
-### What's Public (Visible On-Chain)
+export function Providers({ children }: { children: ReactNode }) {
+  return (
+    <FhevmProvider
+      config={{
+        network: 'sepolia',
+        gatewayUrl: 'https://gateway.zama.ai',
+        debug: true,
+      }}
+    >
+      {children}
+    </FhevmProvider>
+  );
+}
 
-📊 **Transaction existence** - That a listing/request was created (blockchain requirement)
-📊 **User addresses** - Ethereum addresses of landlords and tenants
-📊 **Match status** - Whether a match exists and confirmation status
-📊 **Platform statistics** - Total counts of listings, requests, matches
+// In your root layout or app component
+function App() {
+  return (
+    <Providers>
+      <EncryptionExample />
+    </Providers>
+  );
+}
+```
 
-### Decryption Permissions
+### Next.js 14 Integration
 
-🔑 **Landlords**: Can decrypt their own listing details
-🔑 **Tenants**: Can decrypt their own request details
-🔑 **Matched Parties**: Both parties can view match details after confirmation
-🔑 **Gateway**: Zama's KMS decrypts only for authorized operations
+#### Complete Project Structure
 
-### Security Guarantees
+For production Next.js 14 applications with FHEVM SDK, use this recommended structure:
 
-- **No data leakage**: Sensitive information never leaves encrypted form on-chain
-- **Computation privacy**: Matching logic runs on encrypted data (FHE operations)
-- **Selective disclosure**: Details revealed only after mutual agreement
-- **Re-randomization**: Input ciphertexts automatically re-randomized for sIND-CPAD security
+```
+src/
+├── app/                        # Next.js App Router
+│   ├── layout.tsx              # Root layout with providers
+│   ├── page.tsx                # Home page
+│   ├── globals.css             # Global styles
+│   └── api/                    # API routes
+│       ├── fhe/
+│       │   ├── route.ts        # FHE operations
+│       │   ├── encrypt/route.ts # Encryption endpoint
+│       │   ├── decrypt/route.ts # Decryption endpoint
+│       │   └── compute/route.ts # Computation endpoint
+│       └── keys/route.ts       # Key management
+│
+├── components/                 # React components
+│   ├── ui/                     # Base UI components
+│   │   ├── Button.tsx
+│   │   ├── Input.tsx
+│   │   └── Card.tsx
+│   ├── fhe/                    # FHE feature components
+│   │   ├── FHEProvider.tsx     # FHE context provider
+│   │   ├── EncryptionDemo.tsx  # Encryption demo
+│   │   ├── ComputationDemo.tsx # Computation demo
+│   │   └── KeyManager.tsx      # Key manager
+│   └── examples/               # Use case examples
+│       ├── BankingExample.tsx  # Financial use case
+│       └── MedicalExample.tsx  # Healthcare use case
+│
+├── lib/                        # Utility libraries
+│   ├── fhe/                    # FHE integration
+│   │   ├── client.ts           # Client-side FHE
+│   │   ├── server.ts           # Server-side FHE
+│   │   ├── keys.ts             # Key management
+│   │   └── types.ts            # Type definitions
+│   └── utils/                  # Utility functions
+│       ├── security.ts         # Security utilities
+│       └── validation.ts       # Validation utilities
+│
+├── hooks/                      # Custom hooks
+│   ├── useFHE.ts               # FHE operations hook
+│   ├── useEncryption.ts        # Encryption hook
+│   └── useComputation.ts       # Computation hook
+│
+├── types/                      # TypeScript types
+│   ├── fhe.ts                  # FHE-related types
+│   └── api.ts                  # API type definitions
+│
+└── styles/                     # Style files
+    └── globals.css
+```
 
----
+#### Core Implementation Files
 
-## 🧪 Testing
+**1. Root Layout (`src/app/layout.tsx`)**
 
-### Running Tests
+```typescript
+import { Providers } from './providers';
+import '../styles/globals.css';
+
+export const metadata = {
+  title: 'FHEVM Application',
+  description: 'Privacy-preserving application using FHEVM',
+};
+
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return (
+    <html lang="en">
+      <body>
+        <Providers>{children}</Providers>
+      </body>
+    </html>
+  );
+}
+```
+
+**2. Providers Setup (`src/app/providers.tsx`)**
+
+```typescript
+'use client';
+
+import { ReactNode } from 'react';
+import { FhevmProvider } from '@fhevm/sdk/react';
+
+export function Providers({ children }: { children: ReactNode }) {
+  return (
+    <FhevmProvider
+      config={{
+        network: 'sepolia',
+        gatewayUrl: 'https://gateway.zama.ai',
+        debug: process.env.NODE_ENV === 'development',
+      }}
+    >
+      {children}
+    </FhevmProvider>
+  );
+}
+```
+
+**3. Client-Side FHE Library (`src/lib/fhe/client.ts`)**
+
+```typescript
+import { initFhevm } from '@fhevm/sdk/core';
+import type { FhevmClient, EncryptedValue } from '@fhevm/sdk/types';
+
+let fhevmInstance: FhevmClient | null = null;
+
+export async function getFhevmClient(): Promise<FhevmClient> {
+  if (!fhevmInstance) {
+    fhevmInstance = await initFhevm({
+      network: 'sepolia',
+      gatewayUrl: process.env.NEXT_PUBLIC_GATEWAY_URL || 'https://gateway.zama.ai',
+      debug: process.env.NODE_ENV === 'development',
+    });
+  }
+  return fhevmInstance;
+}
+
+export async function encryptValue(
+  value: number,
+  type: 'euint8' | 'euint16' | 'euint32' = 'euint32'
+): Promise<EncryptedValue> {
+  const client = await getFhevmClient();
+  return client.encrypt(value, type);
+}
+
+export async function decryptValue(
+  ciphertext: string,
+  type: string
+): Promise<bigint> {
+  const client = await getFhevmClient();
+  const result = await client.publicDecrypt(ciphertext, type);
+  return result.value;
+}
+```
+
+**4. Custom FHE Hook (`src/hooks/useFHE.ts`)**
+
+```typescript
+'use client';
+
+import { useState, useCallback } from 'react';
+import { encryptValue, decryptValue } from '@/lib/fhe/client';
+import { useFhevm } from '@fhevm/sdk/react';
+
+export function useFHE() {
+  const { isInitialized, isInitializing } = useFhevm();
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [error, setError] = useState<Error | null>(null);
+
+  const encrypt = useCallback(async (value: number, type: 'euint8' | 'euint16' | 'euint32' = 'euint32') => {
+    setIsProcessing(true);
+    setError(null);
+    try {
+      const result = await encryptValue(value, type);
+      return result;
+    } catch (err) {
+      const error = err instanceof Error ? err : new Error('Encryption failed');
+      setError(error);
+      throw error;
+    } finally {
+      setIsProcessing(false);
+    }
+  }, []);
+
+  const decrypt = useCallback(async (ciphertext: string, type: string) => {
+    setIsProcessing(true);
+    setError(null);
+    try {
+      const result = await decryptValue(ciphertext, type);
+      return result;
+    } catch (err) {
+      const error = err instanceof Error ? err : new Error('Decryption failed');
+      setError(error);
+      throw error;
+    } finally {
+      setIsProcessing(false);
+    }
+  }, []);
+
+  return {
+    encrypt,
+    decrypt,
+    isProcessing,
+    isInitialized,
+    isInitializing,
+    error,
+  };
+}
+```
+
+**5. Encryption Component (`src/components/fhe/EncryptionDemo.tsx`)**
+
+```typescript
+'use client';
+
+import { useState } from 'react';
+import { useEncrypt, useDecrypt } from '@fhevm/sdk/react';
+
+export function EncryptionDemo() {
+  const [value, setValue] = useState('42');
+  const [type, setType] = useState<'euint8' | 'euint16' | 'euint32'>('euint32');
+
+  const { encrypt, isEncrypting, result: encryptResult, error: encryptError } = useEncrypt();
+  const { publicDecrypt, isDecrypting, result: decryptResult, error: decryptError } = useDecrypt();
+
+  const handleEncrypt = async () => {
+    try {
+      await encrypt(Number(value), type);
+    } catch (error) {
+      console.error('Encryption failed:', error);
+    }
+  };
+
+  const handleDecrypt = async () => {
+    if (!encryptResult) return;
+    try {
+      await publicDecrypt(encryptResult.ciphertext, type);
+    } catch (error) {
+      console.error('Decryption failed:', error);
+    }
+  };
+
+  return (
+    <div className="space-y-6 p-6 bg-white rounded-lg shadow-lg">
+      <h2 className="text-2xl font-bold">FHE Encryption Demo</h2>
+
+      <div className="space-y-4">
+        <div>
+          <label className="block text-sm font-medium mb-2">
+            Value to Encrypt
+          </label>
+          <input
+            type="number"
+            value={value}
+            onChange={(e) => setValue(e.target.value)}
+            className="w-full px-4 py-2 border rounded-lg"
+            placeholder="Enter a number"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-2">
+            FHE Type
+          </label>
+          <select
+            value={type}
+            onChange={(e) => setType(e.target.value as any)}
+            className="w-full px-4 py-2 border rounded-lg"
+          >
+            <option value="euint8">euint8 (0-255)</option>
+            <option value="euint16">euint16 (0-65535)</option>
+            <option value="euint32">euint32</option>
+          </select>
+        </div>
+
+        <button
+          onClick={handleEncrypt}
+          disabled={isEncrypting}
+          className="w-full px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+        >
+          {isEncrypting ? 'Encrypting...' : 'Encrypt Value'}
+        </button>
+
+        {encryptError && (
+          <div className="p-4 bg-red-100 border border-red-300 rounded-lg">
+            <p className="text-red-700">Error: {encryptError.message}</p>
+          </div>
+        )}
+
+        {encryptResult && (
+          <div className="p-4 bg-green-100 border border-green-300 rounded-lg">
+            <h3 className="font-semibold mb-2">Encrypted Result:</h3>
+            <p className="break-all font-mono text-sm">{encryptResult.ciphertext}</p>
+            <p className="mt-2 text-sm">Type: {encryptResult.type}</p>
+
+            <button
+              onClick={handleDecrypt}
+              disabled={isDecrypting}
+              className="mt-4 px-6 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:opacity-50"
+            >
+              {isDecrypting ? 'Decrypting...' : 'Decrypt'}
+            </button>
+          </div>
+        )}
+
+        {decryptResult && (
+          <div className="p-4 bg-purple-100 border border-purple-300 rounded-lg">
+            <h3 className="font-semibold mb-2">Decrypted Result:</h3>
+            <p className="text-2xl font-bold">{decryptResult.value.toString()}</p>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+```
+
+**6. API Route for Encryption (`src/app/api/fhe/encrypt/route.ts`)**
+
+```typescript
+import { NextRequest, NextResponse } from 'next/server';
+import { initFhevm } from '@fhevm/sdk/core';
+
+export async function POST(request: NextRequest) {
+  try {
+    const { value, type } = await request.json();
+
+    if (typeof value !== 'number' || !type) {
+      return NextResponse.json(
+        { error: 'Invalid input' },
+        { status: 400 }
+      );
+    }
+
+    const fhevm = await initFhevm({
+      network: 'sepolia',
+      gatewayUrl: process.env.GATEWAY_URL || 'https://gateway.zama.ai',
+    });
+
+    const encrypted = await fhevm.encrypt(value, type);
+
+    return NextResponse.json({
+      success: true,
+      data: encrypted,
+    });
+  } catch (error) {
+    console.error('Encryption error:', error);
+    return NextResponse.json(
+      { error: 'Encryption failed' },
+      { status: 500 }
+    );
+  }
+}
+```
+
+**7. Main Page (`src/app/page.tsx`)**
+
+```typescript
+'use client';
+
+import { EncryptionDemo } from '@/components/fhe/EncryptionDemo';
+import { useFhevm } from '@fhevm/sdk/react';
+
+export default function Home() {
+  const { isInitialized, isInitializing } = useFhevm();
+
+  if (isInitializing) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-xl">Initializing FHEVM SDK...</div>
+      </div>
+    );
+  }
+
+  if (!isInitialized) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-xl text-red-600">Failed to initialize FHEVM SDK</div>
+      </div>
+    );
+  }
+
+  return (
+    <main className="min-h-screen p-8 bg-gradient-to-br from-blue-50 to-indigo-100">
+      <div className="max-w-4xl mx-auto">
+        <h1 className="text-4xl font-bold text-center mb-8">
+          FHEVM Application
+        </h1>
+        <EncryptionDemo />
+      </div>
+    </main>
+  );
+}
+```
+
+#### Environment Configuration
+
+Create a `.env.local` file:
 
 ```bash
-# Run all tests
-npm test
-
-# Run with gas reporting
-REPORT_GAS=true npm test
-
-# Run with coverage
-npm run coverage
-
-# Run specific test file
-npx hardhat test test/PrivateRentalMatching.test.ts
-
-# Run security checks
-npm run security:check
-
-# Run performance analysis
-npm run performance:check
+NEXT_PUBLIC_GATEWAY_URL=https://gateway.zama.ai
+NEXT_PUBLIC_NETWORK=sepolia
+GATEWAY_URL=https://gateway.zama.ai
 ```
 
-### Test Coverage
+#### Additional API Routes
 
-**Total Test Cases**: 46
-**Passing**: 11 (without FHE setup)
-**Coverage**: 17% (requires FHE mocking for full coverage)
+**Decryption API (`src/app/api/fhe/decrypt/route.ts`)**
 
-#### Test Categories
+```typescript
+import { NextRequest, NextResponse } from 'next/server';
+import { initFhevm } from '@fhevm/sdk/core';
 
-✅ **Deployment Tests** (2 tests)
-- Contract deployment with correct parameters
-- Initial state verification
+export async function POST(request: NextRequest) {
+  try {
+    const { ciphertext, type, signature, contractAddress } = await request.json();
 
-✅ **Listing Tests** (8 tests)
-- Creating encrypted listings
-- Listing ownership verification
-- Active listing counter
-- User listing retrieval
+    if (!ciphertext || !type) {
+      return NextResponse.json(
+        { error: 'Missing required fields' },
+        { status: 400 }
+      );
+    }
 
-✅ **Request Tests** (8 tests)
-- Creating encrypted requests
-- Request ownership verification
-- Active request counter
-- User request retrieval
+    const fhevm = await initFhevm({
+      network: 'sepolia',
+      gatewayUrl: process.env.GATEWAY_URL || 'https://gateway.zama.ai',
+    });
 
-✅ **Matching Tests** (10 tests)
-- Match creation with FHE validation
-- Authorization checks
-- Match details retrieval
-- Invalid match prevention
+    let result;
+    if (signature && contractAddress) {
+      // User decryption with EIP-712 signature
+      result = await fhevm.userDecrypt(ciphertext, type, signature, contractAddress);
+    } else {
+      // Public decryption
+      result = await fhevm.publicDecrypt(ciphertext, type);
+    }
 
-✅ **Confirmation Tests** (8 tests)
-- Two-party confirmation system
-- Landlord confirmation
-- Tenant confirmation
-- Finalization logic
+    return NextResponse.json({
+      success: true,
+      data: {
+        value: result.value.toString(),
+        type: result.type,
+      },
+    });
+  } catch (error) {
+    console.error('Decryption error:', error);
+    return NextResponse.json(
+      { error: 'Decryption failed' },
+      { status: 500 }
+    );
+  }
+}
+```
 
-✅ **Statistics Tests** (6 tests)
-- Platform statistics tracking
-- Counter accuracy
-- Active vs. total counts
+**Computation API (`src/app/api/fhe/compute/route.ts`)**
 
-✅ **Edge Cases** (4 tests)
-- Zero state handling
-- Invalid inputs
-- Authorization failures
-- Boundary conditions
+```typescript
+import { NextRequest, NextResponse } from 'next/server';
+import { initFhevm } from '@fhevm/sdk/core';
 
-For detailed testing documentation, see [TESTING.md](./TESTING.md).
+export async function POST(request: NextRequest) {
+  try {
+    const { operation, operands, types } = await request.json();
+
+    if (!operation || !operands || !types) {
+      return NextResponse.json(
+        { error: 'Missing required fields' },
+        { status: 400 }
+      );
+    }
+
+    const fhevm = await initFhevm({
+      network: 'sepolia',
+      gatewayUrl: process.env.GATEWAY_URL || 'https://gateway.zama.ai',
+    });
+
+    // Encrypt operands
+    const encryptedOperands = await Promise.all(
+      operands.map((value: number, index: number) =>
+        fhevm.encrypt(value, types[index])
+      )
+    );
+
+    return NextResponse.json({
+      success: true,
+      data: {
+        operation,
+        encryptedOperands: encryptedOperands.map(op => ({
+          ciphertext: op.ciphertext,
+          type: op.type,
+        })),
+      },
+    });
+  } catch (error) {
+    console.error('Computation error:', error);
+    return NextResponse.json(
+      { error: 'Computation failed' },
+      { status: 500 }
+    );
+  }
+}
+```
+
+#### Advanced Components
+
+**Key Manager Component (`src/components/fhe/KeyManager.tsx`)**
+
+```typescript
+'use client';
+
+import { useState } from 'react';
+import { useFhevm } from '@fhevm/sdk/react';
+
+export function KeyManager() {
+  const { fhevm, isInitialized } = useFhevm();
+  const [publicKey, setPublicKey] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+
+  const handleGetPublicKey = async () => {
+    if (!fhevm) return;
+    setLoading(true);
+    try {
+      // Get the public key from FHEVM instance
+      const key = await fhevm.getPublicKey();
+      setPublicKey(key);
+    } catch (error) {
+      console.error('Failed to get public key:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (!isInitialized) {
+    return <div>FHEVM not initialized</div>;
+  }
+
+  return (
+    <div className="p-6 bg-white rounded-lg shadow-lg">
+      <h2 className="text-2xl font-bold mb-4">Key Management</h2>
+
+      <button
+        onClick={handleGetPublicKey}
+        disabled={loading}
+        className="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50"
+      >
+        {loading ? 'Loading...' : 'Get Public Key'}
+      </button>
+
+      {publicKey && (
+        <div className="mt-4 p-4 bg-gray-100 rounded-lg">
+          <h3 className="font-semibold mb-2">Public Key:</h3>
+          <p className="break-all font-mono text-sm">{publicKey}</p>
+        </div>
+      )}
+    </div>
+  );
+}
+```
+
+**Computation Demo Component (`src/components/fhe/ComputationDemo.tsx`)**
+
+```typescript
+'use client';
+
+import { useState } from 'react';
+import { useEncrypt } from '@fhevm/sdk/react';
+
+export function ComputationDemo() {
+  const [value1, setValue1] = useState('10');
+  const [value2, setValue2] = useState('20');
+  const [operation, setOperation] = useState<'add' | 'sub' | 'mul'>('add');
+
+  const { encrypt, isEncrypting } = useEncrypt();
+  const [results, setResults] = useState<any>(null);
+
+  const handleCompute = async () => {
+    try {
+      // Encrypt both values
+      const encrypted1 = await encrypt(Number(value1), 'euint32');
+      const encrypted2 = await encrypt(Number(value2), 'euint32');
+
+      setResults({
+        operation,
+        operand1: encrypted1,
+        operand2: encrypted2,
+      });
+    } catch (error) {
+      console.error('Computation failed:', error);
+    }
+  };
+
+  return (
+    <div className="space-y-6 p-6 bg-white rounded-lg shadow-lg">
+      <h2 className="text-2xl font-bold">FHE Computation Demo</h2>
+
+      <div className="space-y-4">
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <label className="block text-sm font-medium mb-2">
+              First Value
+            </label>
+            <input
+              type="number"
+              value={value1}
+              onChange={(e) => setValue1(e.target.value)}
+              className="w-full px-4 py-2 border rounded-lg"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium mb-2">
+              Second Value
+            </label>
+            <input
+              type="number"
+              value={value2}
+              onChange={(e) => setValue2(e.target.value)}
+              className="w-full px-4 py-2 border rounded-lg"
+            />
+          </div>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-2">
+            Operation
+          </label>
+          <select
+            value={operation}
+            onChange={(e) => setOperation(e.target.value as any)}
+            className="w-full px-4 py-2 border rounded-lg"
+          >
+            <option value="add">Addition (+)</option>
+            <option value="sub">Subtraction (-)</option>
+            <option value="mul">Multiplication (×)</option>
+          </select>
+        </div>
+
+        <button
+          onClick={handleCompute}
+          disabled={isEncrypting}
+          className="w-full px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:opacity-50"
+        >
+          {isEncrypting ? 'Computing...' : 'Encrypt and Compute'}
+        </button>
+
+        {results && (
+          <div className="p-4 bg-indigo-100 border border-indigo-300 rounded-lg">
+            <h3 className="font-semibold mb-2">Encrypted Operands:</h3>
+            <div className="space-y-2 text-sm">
+              <p>
+                <strong>Operation:</strong> {results.operation}
+              </p>
+              <p className="break-all">
+                <strong>Operand 1:</strong> {results.operand1?.ciphertext}
+              </p>
+              <p className="break-all">
+                <strong>Operand 2:</strong> {results.operand2?.ciphertext}
+              </p>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+```
+
+**Banking Example Component (`src/components/examples/BankingExample.tsx`)**
+
+```typescript
+'use client';
+
+import { useState } from 'react';
+import { useEncrypt, useDecrypt } from '@fhevm/sdk/react';
+
+export function BankingExample() {
+  const [balance, setBalance] = useState('1000');
+  const [amount, setAmount] = useState('100');
+
+  const { encrypt, isEncrypting, result: encryptedBalance } = useEncrypt();
+  const { publicDecrypt, result: decryptedBalance } = useDecrypt();
+
+  const handleEncryptBalance = async () => {
+    await encrypt(Number(balance), 'euint32');
+  };
+
+  const handleCheckBalance = async () => {
+    if (encryptedBalance) {
+      await publicDecrypt(encryptedBalance.ciphertext, 'euint32');
+    }
+  };
+
+  return (
+    <div className="p-6 bg-white rounded-lg shadow-lg">
+      <h2 className="text-2xl font-bold mb-4">
+        🏦 Private Banking Example
+      </h2>
+      <p className="text-gray-600 mb-6">
+        Encrypt account balance and perform private transactions
+      </p>
+
+      <div className="space-y-4">
+        <div>
+          <label className="block text-sm font-medium mb-2">
+            Account Balance
+          </label>
+          <input
+            type="number"
+            value={balance}
+            onChange={(e) => setBalance(e.target.value)}
+            className="w-full px-4 py-2 border rounded-lg"
+          />
+        </div>
+
+        <button
+          onClick={handleEncryptBalance}
+          disabled={isEncrypting}
+          className="w-full px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50"
+        >
+          {isEncrypting ? 'Encrypting...' : 'Encrypt Balance'}
+        </button>
+
+        {encryptedBalance && (
+          <div className="p-4 bg-green-100 border border-green-300 rounded-lg">
+            <p className="text-sm font-medium mb-2">Encrypted Balance:</p>
+            <p className="break-all font-mono text-xs">
+              {encryptedBalance.ciphertext}
+            </p>
+
+            <button
+              onClick={handleCheckBalance}
+              className="mt-3 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+            >
+              Check Balance
+            </button>
+          </div>
+        )}
+
+        {decryptedBalance && (
+          <div className="p-4 bg-blue-100 border border-blue-300 rounded-lg">
+            <p className="text-sm font-medium">Current Balance:</p>
+            <p className="text-2xl font-bold">${decryptedBalance.value.toString()}</p>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+```
+
+#### Type Definitions (`src/types/fhe.ts`)**
+
+```typescript
+export interface EncryptedValue {
+  ciphertext: string;
+  type: string;
+  timestamp: number;
+}
+
+export interface DecryptedValue {
+  value: bigint;
+  type: string;
+  timestamp: number;
+}
+
+export interface FhevmConfig {
+  network: 'sepolia' | 'mainnet';
+  gatewayUrl: string;
+  debug?: boolean;
+}
+
+export interface ComputationRequest {
+  operation: 'add' | 'sub' | 'mul' | 'div';
+  operands: number[];
+  types: string[];
+}
+
+export interface ComputationResult {
+  operation: string;
+  encryptedOperands: EncryptedValue[];
+  result?: EncryptedValue;
+}
+```
+
+#### Package Configuration (`package.json`)
+
+```json
+{
+  "name": "fhevm-nextjs-app",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@fhevm/sdk": "^1.0.0",
+    "next": "^14.2.0",
+    "react": "^18.3.0",
+    "react-dom": "^18.3.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@types/react": "^18.3.0",
+    "@types/react-dom": "^18.3.0",
+    "typescript": "^5.3.0",
+    "autoprefixer": "^10.4.0",
+    "postcss": "^8.4.0",
+    "tailwindcss": "^3.4.0"
+  }
+}
+```
+
+### Vue 3 Integration
+
+```vue
+<script setup lang="ts">
+import { ref, onMounted } from 'vue';
+import { initFhevm } from '@fhevm/sdk/core';
+
+const fhevm = ref(null);
+const encrypted = ref(null);
+const decrypted = ref(null);
+const isEncrypting = ref(false);
+const isDecrypting = ref(false);
+const inputValue = ref(42);
+
+onMounted(async () => {
+  fhevm.value = await initFhevm({
+    network: 'sepolia',
+    gatewayUrl: 'https://gateway.zama.ai',
+  });
+});
+
+async function encryptValue() {
+  isEncrypting.value = true;
+  try {
+    encrypted.value = await fhevm.value.encrypt(inputValue.value, 'euint32');
+  } finally {
+    isEncrypting.value = false;
+  }
+}
+
+async function decryptValue() {
+  if (!encrypted.value) return;
+  isDecrypting.value = true;
+  try {
+    decrypted.value = await fhevm.value.publicDecrypt(
+      encrypted.value.ciphertext,
+      'euint32'
+    );
+  } finally {
+    isDecrypting.value = false;
+  }
+}
+</script>
+
+<template>
+  <div>
+    <input v-model.number="inputValue" type="number" />
+    <button @click="encryptValue" :disabled="isEncrypting">
+      {{ isEncrypting ? 'Encrypting...' : 'Encrypt' }}
+    </button>
+
+    <div v-if="encrypted">
+      <p>Encrypted: {{ encrypted.ciphertext }}</p>
+      <button @click="decryptValue" :disabled="isDecrypting">
+        {{ isDecrypting ? 'Decrypting...' : 'Decrypt' }}
+      </button>
+    </div>
+
+    <div v-if="decrypted">
+      <p>Decrypted: {{ decrypted.value }}</p>
+    </div>
+  </div>
+</template>
+```
+
+### Node.js Backend Integration
+
+```typescript
+import { initFhevm } from '@fhevm/sdk/core';
+
+async function main() {
+  // Initialize SDK
+  const fhevm = await initFhevm({
+    network: 'sepolia',
+    gatewayUrl: 'https://gateway.zama.ai',
+  });
+
+  // Encrypt a value
+  const encrypted = await fhevm.encrypt(1234, 'euint32');
+  console.log('Encrypted:', encrypted.ciphertext);
+
+  // Public decrypt (for testing/backend scenarios)
+  const decrypted = await fhevm.publicDecrypt(
+    encrypted.ciphertext,
+    'euint32'
+  );
+  console.log('Decrypted:', decrypted.value);
+}
+
+main().catch(console.error);
+```
+
+### SDK API Reference
+
+#### Core SDK (`@fhevm/sdk/core`)
+
+```typescript
+// Initialize
+const fhevm = await initFhevm(config: FhevmConfig): Promise<FhevmClient>
+
+// Configuration
+interface FhevmConfig {
+  network: 'sepolia' | 'mainnet';
+  gatewayUrl: string;
+  debug?: boolean;
+}
+
+// Encryption
+const result = await fhevm.encrypt(
+  value: number | bigint,
+  type: 'euint8' | 'euint16' | 'euint32' | 'euint64' | 'euint128'
+): Promise<EncryptedValue>
+
+// Public Decryption (no signature)
+const decrypted = await fhevm.publicDecrypt(
+  ciphertext: string,
+  type: string
+): Promise<DecryptedValue>
+
+// User Decryption (with EIP-712 signature)
+const decrypted = await fhevm.userDecrypt(
+  ciphertext: string,
+  type: string,
+  signature: string,
+  contractAddress: string
+): Promise<DecryptedValue>
+```
+
+#### React Hooks (`@fhevm/sdk/react`)
+
+```typescript
+// Provider
+<FhevmProvider config={config}>
+  {children}
+</FhevmProvider>
+
+// Initialization Hook
+const {
+  isInitialized: boolean,
+  isInitializing: boolean,
+  error: Error | null,
+  fhevm: FhevmClient | null
+} = useFhevm()
+
+// Encryption Hook
+const {
+  encrypt: (value: number, type: string) => Promise<void>,
+  isEncrypting: boolean,
+  result: EncryptedValue | null,
+  error: Error | null,
+  reset: () => void
+} = useEncrypt()
+
+// Decryption Hook
+const {
+  publicDecrypt: (ciphertext: string, type: string) => Promise<void>,
+  userDecrypt: (ciphertext: string, type: string, signature: string) => Promise<void>,
+  isDecrypting: boolean,
+  result: DecryptedValue | null,
+  error: Error | null,
+  reset: () => void
+} = useDecrypt()
+```
+
+#### Type Definitions
+
+```typescript
+interface EncryptedValue {
+  ciphertext: string;      // Hex-encoded encrypted data
+  type: string;            // FHE type (euint8, euint16, etc.)
+  timestamp: number;       // Encryption timestamp
+}
+
+interface DecryptedValue {
+  value: bigint;           // Decrypted value
+  type: string;            // FHE type
+  timestamp: number;       // Decryption timestamp
+}
+```
 
 ---
 
-## 💻 Tech Stack
+## Example Templates
 
-### Smart Contracts
+All examples are located in the `examples/` directory and demonstrate different ways to integrate the FHEVM SDK.
 
-| Technology | Version | Purpose |
-|------------|---------|---------|
-| **Solidity** | 0.8.24 | Smart contract language |
-| **Hardhat** | 2.19.5 | Development environment |
-| **@fhevm/solidity** | 0.9.0-1 | FHE encryption library |
-| **Ethers.js** | 6.15.0 | Ethereum interaction |
-| **TypeChain** | 8.3.2 | TypeScript bindings |
+### 1. Next.js 14 Demo (`examples/nextjs-demo/`)
 
-### Frontend
+A complete Next.js 14 application showcasing the FHEVM SDK with App Router:
 
-| Technology | Version | Purpose |
-|------------|---------|---------|
-| **Next.js** | 14.2.0 | React framework |
-| **React** | 18.3.0 | UI library |
-| **TypeScript** | 5.0.0 | Type safety |
-| **Wagmi** | 2.12.0 | React hooks for Ethereum |
-| **RainbowKit** | 2.1.0 | Wallet connection UI |
-| **fhevmjs** | 0.5.0 | Client-side FHE operations |
-| **Tailwind CSS** | 3.4.0 | Styling |
+**Features:**
+- Full FHEVM SDK integration with React hooks
+- Interactive encryption/decryption UI
+- Support for multiple FHE types (euint8, euint16, euint32)
+- Real-time state management with loading indicators
+- Beautiful gradient UI with Tailwind CSS
+- TypeScript support with full type safety
+- Complete API routes for server-side operations
+- Reusable FHE components and custom hooks
+- Banking and medical use case examples
 
-### Development Tools
-
-| Tool | Purpose |
-|------|---------|
-| **Solhint** | Solidity linting |
-| **ESLint** | TypeScript/JavaScript linting |
-| **Prettier** | Code formatting |
-| **Husky** | Git hooks |
-| **GitHub Actions** | CI/CD automation |
-| **Hardhat Gas Reporter** | Gas optimization |
-| **Solidity Coverage** | Test coverage |
-
-### Blockchain Infrastructure
-
-| Component | Details |
-|-----------|---------|
-| **Network** | Sepolia Testnet (Chain ID: 11155111) |
-| **FHE Engine** | Zama fhEVM |
-| **Gateway** | New Gateway API (sIND-CPAD security) |
-| **RPC Provider** | Alchemy |
-| **Verification** | Etherscan |
-
----
-
-## 📁 Project Structure
-
-```
-private-rental-matching/
-├── contracts/                    # Solidity smart contracts
-│   └── PrivateRentalMatching.sol # Main FHE contract
-│
-├── test/                         # Test suite
-│   └── PrivateRentalMatching.test.ts  # 46 comprehensive tests
-│
-├── scripts/                      # Hardhat scripts
-│   ├── deploy.js                 # Deployment with logging
-│   ├── verify.js                 # Etherscan verification
-│   ├── interact.js               # Contract interaction (7 modes)
-│   ├── simulate.js               # Simulation scenarios
-│   ├── security-audit.js         # Automated security checks
-│   └── gas-analysis.js           # Gas optimization analysis
-│
-├── app/                          # Next.js 14 app directory
-│   ├── components/               # React components
-│   │   ├── CreateListing.tsx     # Landlord listing form
-│   │   ├── CreateRequest.tsx     # Tenant request form
-│   │   ├── CreateMatch.tsx       # Match creation form
-│   │   ├── PlatformStats.tsx     # Statistics display
-│   │   └── UserActivity.tsx      # User listings/requests
-│   ├── config/                   # Configuration
-│   │   └── contract.ts           # Contract ABI and address
-│   ├── layout.tsx                # Root layout with providers
-│   ├── page.tsx                  # Main application page
-│   └── providers.tsx             # Wagmi + RainbowKit setup
-│
-├── .github/                      # GitHub configuration
-│   └── workflows/
-│       └── test.yml              # CI/CD pipeline (4 jobs)
-│
-├── .husky/                       # Git hooks
-│   ├── pre-commit                # Lint + format + security
-│   └── pre-push                  # Tests + compilation
-│
-├── deployments/                  # Deployment records
-│   └── latest-sepolia.json       # Latest deployment info
-│
-├── hardhat.config.ts             # Hardhat configuration
-├── next.config.js                # Next.js configuration
-├── tsconfig.json                 # TypeScript configuration
-├── package.json                  # Dependencies and scripts
-├── .env.example                  # Environment template (215 lines)
-├── .solhint.json                 # Solidity linting rules
-├── .eslintrc.yml                 # TypeScript linting rules
-├── .prettierrc.yml               # Code formatting rules
-├── codecov.yml                   # Coverage configuration
-│
-├── README.md                     # This file
-├── DEPLOYMENT.md                 # Deployment guide (400+ lines)
-├── TESTING.md                    # Testing guide (400+ lines)
-├── CI_CD.md                      # CI/CD documentation
-├── SECURITY_PERFORMANCE.md       # Security & performance guide (556 lines)
-└── LICENSE                       # MIT License
-```
-
----
-
-## 📦 Deployment
-
-### Current Deployment (Sepolia)
-
-```
-Network:           Sepolia Testnet
-Chain ID:          11155111
-Contract Address:  0x980051585b6DC385159BD53B5C78eb7B91b848E5
-Compiler Version:  0.8.24
-Optimization:      Enabled (200 runs)
-Verified:          ✅ Yes
-```
-
-### Deployment Steps
+**Running the Example:**
 
 ```bash
-# 1. Set environment variables in .env
-SEPOLIA_RPC_URL=https://eth-sepolia.g.alchemy.com/v2/YOUR_KEY
-PRIVATE_KEY=0x...
-ETHERSCAN_API_KEY=...
+# From the root directory
+npm install
+npm run dev:nextjs
 
-# 2. Compile contracts
-npm run compile
-
-# 3. Run tests
-npm test
-
-# 4. Deploy to Sepolia
-npm run deploy:sepolia
-# Output: Contract deployed at 0x...
-
-# 5. Verify on Etherscan
-npm run verify
-# Output: Contract verified successfully
-
-# 6. Update frontend configuration
-# Edit app/config/contract.ts with new address
-
-# 7. Test interaction
-npm run interact
+# Or from the example directory
+cd examples/nextjs-demo
+npm install
+npm run dev
 ```
 
-For complete deployment instructions, see [DEPLOYMENT.md](./DEPLOYMENT.md).
+Visit `http://localhost:3000` to see the demo in action.
 
----
+**Key Files:**
+- `src/app/providers.tsx` - FhevmProvider setup
+- `src/app/page.tsx` - Main component using SDK hooks
+- `src/app/api/fhe/` - API routes for encryption/decryption
+- `src/components/fhe/` - Reusable FHE components
+- `src/lib/fhe/` - FHE utility functions
+- `src/hooks/` - Custom React hooks
 
-## 🔧 Configuration
+### 2. Rental Matching Platform - HTML Version (`examples/RentalMatching/`)
 
-### Environment Variables
+A production-ready privacy-preserving rental matching platform built with vanilla HTML/JS:
 
-Create a `.env` file based on `.env.example`:
+**Features:**
+- Anonymous property listings with encrypted data
+- Encrypted matching algorithm
+- User and public decryption workflows
+- EIP-712 signature integration for secure decryption
+- Production-ready deployment configuration
 
-```env
-# ============================================
-# Network Configuration
-# ============================================
-SEPOLIA_RPC_URL=https://eth-sepolia.g.alchemy.com/v2/YOUR_API_KEY
-HARDHAT_RPC_URL=http://127.0.0.1:8545
+**Use Case:** Landlords and tenants can match without revealing sensitive information (prices, locations) until both parties confirm mutual interest.
 
-# ============================================
-# Deployment Configuration
-# ============================================
-PRIVATE_KEY=0x0000000000000000000000000000000000000000000000000000000000000000
-DEPLOYER_ADDRESS=0x0000000000000000000000000000000000000000
+**Live Demo:** [https://simple-rental-matching.vercel.app/](https://simple-rental-matching.vercel.app/)
 
-# ============================================
-# Contract Addresses
-# ============================================
-CONTRACT_ADDRESS=0x980051585b6DC385159BD53B5C78eb7B91b848E5
-NEXT_PUBLIC_CONTRACT_ADDRESS=0x980051585b6DC385159BD53B5C78eb7B91b848E5
+### 3. Rental Matching Platform - React Version (`examples/rental-matching-react/`)
 
-# ============================================
-# FHE Gateway Configuration (PauserSet)
-# ============================================
-NUM_PAUSERS=4
-PAUSER_ADDRESS_0=0x0000000000000000000000000000000000000000
-PAUSER_ADDRESS_1=0x0000000000000000000000000000000000000000
-PAUSER_ADDRESS_2=0x0000000000000000000000000000000000000000
-PAUSER_ADDRESS_3=0x0000000000000000000000000000000000000000
-KMS_GENERATION=0
+A modern React implementation of the privacy-preserving rental matching platform:
 
-# ============================================
-# Frontend Configuration
-# ============================================
-NEXT_PUBLIC_CHAIN_ID=11155111
-NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID=your_project_id
+**Features:**
+- Built with React 18 and TypeScript for type safety
+- Vite for fast development and optimized builds
+- Custom React hooks for wallet and contract interactions
+- Component-based architecture for better code organization
+- Real-time event listeners for instant updates
+- Responsive design that works on all devices
+- Full integration with Ethers.js 6
+- FHE encryption for all sensitive data
 
-# ============================================
-# Etherscan Configuration
-# ============================================
-ETHERSCAN_API_KEY=your_etherscan_api_key
+**Tech Stack:**
+- React 18 with TypeScript
+- Vite build tool
+- Ethers.js 6 for blockchain interaction
+- FHEVM for fully homomorphic encryption
+- CSS3 for styling
 
-# ============================================
-# Performance Configuration
-# ============================================
-REPORT_GAS=true
-OPTIMIZER_RUNS=200
-OPTIMIZER_ENABLED=true
-EVM_VERSION=cancun
-```
-
-### Gateway Configuration
-
-The platform uses Zama's **New Gateway API** with enhanced security:
-
-#### Key Features
-
-1. **Event-Based Decryption**
-   - KMS responses emitted as individual events
-   - No batching of decrypt results
-
-2. **Input Re-randomization**
-   - Automatic re-randomization for sIND-CPAD security
-   - Protects against ciphertext replay attacks
-
-3. **PauserSet Structure**
-   ```
-   NUM_PAUSERS = n_kms + n_copro
-
-   Example:
-   - 2 KMS nodes (PAUSER_ADDRESS_0, PAUSER_ADDRESS_1)
-   - 2 Coprocessor nodes (PAUSER_ADDRESS_2, PAUSER_ADDRESS_3)
-   - Total: 4 pausers
-   ```
-
-4. **View Function Migration**
-   - Using `is*()` functions that return booleans
-   - No direct decryption in view functions
-
----
-
-## 📊 CI/CD Pipeline
-
-### GitHub Actions Workflow
-
-The project includes automated CI/CD with 4 parallel jobs:
-
-```yaml
-Jobs:
-  1. test-node-18    # Node.js 18.x testing
-  2. test-node-20    # Node.js 20.x testing
-  3. security-audit  # npm audit + vulnerability scan
-  4. build-check     # Frontend build verification
-
-Triggers:
-  - push to main/develop
-  - pull requests to main/develop
-
-Checks:
-  ✓ Code formatting (Prettier)
-  ✓ TypeScript linting (ESLint)
-  ✓ Solidity linting (Solhint)
-  ✓ Contract compilation
-  ✓ Test execution
-  ✓ Coverage generation
-  ✓ Security audit
-  ✓ Build verification
-```
-
-### Pre-commit Hooks
+**Running the React Version:**
 
 ```bash
-# Automatically runs before each commit:
-1. lint-staged
-   ├─ Prettier format
-   ├─ ESLint fix
-   └─ Solhint fix
-2. Security checks
-   ├─ npm audit
-   └─ Solhint security rules
+# From the root directory
+cd examples/rental-matching-react
 
-# Automatically runs before each push:
-1. Test suite execution
-2. Contract compilation check
+# Install dependencies (if not using workspace)
+npm install
+
+# Start development server
+npm run dev
+
+# Build for production
+npm run build
 ```
 
-For detailed CI/CD documentation, see [CI_CD.md](./CI_CD.md).
+Visit `http://localhost:3000` to see the React application.
+
+**Key Improvements over HTML Version:**
+- Better code organization with reusable components
+- Type safety with TypeScript
+- Custom hooks for cleaner state management
+- Improved developer experience with hot reload
+- Better testability and maintainability
+- Optimized production builds
+
+### 4. Additional Examples
+
+The `examples/README.md` file contains additional integration patterns including:
+- React 18 standalone example
+- Vue 3 Composition API integration
+- Node.js backend integration
+- Vanilla JavaScript usage
+
+**Explore the Examples:**
+
+```bash
+# View all examples
+ls examples/
+
+# Read the examples documentation
+cat examples/README.md
+```
 
 ---
 
-## 🛡️ Security & Performance
+## 🚀 Working with Examples
 
-### Security Features
+### Running the Next.js Demo
 
-1. **Pre-commit Security Checks**
-   ```bash
-   npm run security:check
-   # Runs: npm audit + Solhint + ESLint
-   ```
+The primary example demonstrates all SDK features in a Next.js 14 application:
 
-2. **Code Quality Tools**
-   - **Solhint**: Solidity security patterns
-   - **ESLint**: TypeScript type safety
-   - **Prettier**: Consistent formatting
+```bash
+# Option 1: Run from root with npm script
+npm run dev:nextjs
 
-3. **FHE Security**
-   - sIND-CPAD security via input re-randomization
-   - Encrypted computation without data leakage
-   - Access control for decryption
+# Option 2: Run directly from example directory
+cd examples/nextjs-demo
+npm install
+npm run dev
+```
 
-### Performance Optimization
+Open `http://localhost:3000` to see:
+- Interactive encryption/decryption interface
+- Multiple FHE type support (euint8, euint16, euint32)
+- Real-time loading states and error handling
+- Full TypeScript integration
 
-1. **Gas Optimization**
-   ```bash
-   npm run performance:check
-   # Generates gas report for all functions
-   ```
+### Understanding the SDK Integration
 
-2. **Compiler Optimization**
-   ```
-   Development:  200 runs
-   Production:   800+ runs
-   ```
+The Next.js example showcases the recommended integration pattern:
 
-3. **Frontend Optimization**
-   - SWC minification
-   - Code splitting
-   - Package import optimization
-   - Security headers
+**1. Provider Setup** (`examples/nextjs-demo/src/app/providers.tsx`)
+```typescript
+import { FhevmProvider } from '@fhevm/sdk/react';
 
-For detailed security and performance documentation, see [SECURITY_PERFORMANCE.md](./SECURITY_PERFORMANCE.md).
+export function Providers({ children }) {
+  return (
+    <FhevmProvider config={{
+      network: 'sepolia',
+      gatewayUrl: 'https://gateway.zama.ai'
+    }}>
+      {children}
+    </FhevmProvider>
+  );
+}
+```
+
+**2. Using Hooks** (`examples/nextjs-demo/src/app/page.tsx`)
+```typescript
+import { useFhevm, useEncrypt, useDecrypt } from '@fhevm/sdk/react';
+
+export default function Home() {
+  const { isInitialized } = useFhevm();
+  const { encrypt, isEncrypting, result } = useEncrypt();
+
+  const handleEncrypt = async () => {
+    await encrypt(42, 'euint32');
+  };
+
+  return (
+    <button onClick={handleEncrypt} disabled={isEncrypting}>
+      {isEncrypting ? 'Encrypting...' : 'Encrypt'}
+    </button>
+  );
+}
+```
+
+### Customizing for Your Project
+
+To adapt the examples for your own project:
+
+1. **Copy the provider setup** from `examples/nextjs-demo/src/app/providers.tsx`
+2. **Import the hooks** in your components
+3. **Adjust the configuration** (network, gateway URL, contract addresses)
+4. **Add your business logic** around encryption/decryption
+5. **Style to match** your design system
+
+### Example Use Cases
+
+The examples demonstrate several real-world scenarios:
+
+- **Encrypted Forms**: User input encryption before submission
+- **Private Data Storage**: Storing sensitive data on-chain
+- **Selective Disclosure**: Decrypting only when authorized
+- **Batch Operations**: Encrypting multiple values efficiently
 
 ---
 
 ## 📚 Documentation
 
-### Complete Guides
-
-- **[README.md](README.md)** - Project overview (this file)
-- **[DEPLOYMENT.md](DEPLOYMENT.md)** - Complete deployment guide (400+ lines)
-- **[TESTING.md](TESTING.md)** - Testing documentation (400+ lines)
-- **[CI_CD.md](CI_CD.md)** - CI/CD pipeline guide
-- **[SECURITY_PERFORMANCE.md](SECURITY_PERFORMANCE.md)** - Security & performance (556 lines)
-
-### Quick References
-
-- **[HARDHAT_FRAMEWORK_SUMMARY.md](HARDHAT_FRAMEWORK_SUMMARY.md)** - Framework overview
-- **[TEST_SUMMARY.md](TEST_SUMMARY.md)** - Test suite summary
-- **[CI_CD_SUMMARY.md](CI_CD_SUMMARY.md)** - CI/CD summary
-- **[SECURITY_PERFORMANCE_SUMMARY.md](SECURITY_PERFORMANCE_SUMMARY.md)** - Security summary
+- **[BOUNTY_SUBMISSION.md](./BOUNTY_SUBMISSION.md)**: Complete bounty requirements checklist
+- **[SETUP_GUIDE.md](./SETUP_GUIDE.md)**: Detailed installation and configuration
+- **[SDK_DOCUMENTATION.md](./SDK_DOCUMENTATION.md)**: Full API reference
+- **[packages/fhevm-sdk/README.md](./packages/fhevm-sdk/README.md)**: SDK-specific docs
 
 ---
 
-## 🛣️ Roadmap
+## Links
 
-### ✅ Completed
-
-- [x] Core smart contract with FHE encryption
-- [x] Comprehensive test suite (46 tests)
-- [x] Next.js 14 frontend with RainbowKit
-- [x] New Gateway API integration
-- [x] CI/CD pipeline with GitHub Actions
-- [x] Security toolchain (Solhint, ESLint, Husky)
-- [x] Performance optimization
-- [x] Complete documentation
-
-### 🚧 In Progress
-
-- [ ] FHE mocking for full test coverage
-- [ ] Advanced search filters with encrypted predicates
-- [ ] Messaging system between matched parties
-
-### 🔮 Future Plans
-
-- [ ] Review and rating system (encrypted reviews)
-- [ ] Mobile application (React Native)
-- [ ] Multi-chain support (Polygon, Arbitrum)
-- [ ] AI-powered matching recommendations
-- [ ] Escrow and payment integration
-- [ ] Decentralized identity integration
+| Resource | URL |
+|----------|-----|
+| **GitHub Repository** | Your repository URL |
+| **Demo Videos** | Available in repository root |
+| **Contract Address** | `0x980051585b6DC385159BD53B5C78eb7B91b848E5` |
+| **Sepolia Explorer** | https://sepolia.etherscan.io/address/0x980051585b6DC385159BD53B5C78eb7B91b848E5 |
+| **Examples Directory** | `./examples/` |
+| **SDK Package** | `./packages/fhevm-sdk/` |
 
 ---
 
-## 🔗 Resources
+## Testing
 
-### Zama Documentation
-
-- **fhEVM Documentation**: [https://docs.zama.ai/fhevm](https://docs.zama.ai/fhevm)
-- **Gateway API Guide**: [https://docs.zama.ai/fhevm/gateway](https://docs.zama.ai/fhevm/gateway)
-- **FHE Operations**: [https://docs.zama.ai/fhevm/fundamentals/types](https://docs.zama.ai/fhevm/fundamentals/types)
-- **Security Best Practices**: [https://docs.zama.ai/fhevm/guides/security](https://docs.zama.ai/fhevm/guides/security)
-
-### Technology Stack
-
-- **Next.js**: [https://nextjs.org/docs](https://nextjs.org/docs)
-- **Hardhat**: [https://hardhat.org/docs](https://hardhat.org/docs)
-- **RainbowKit**: [https://www.rainbowkit.com/docs](https://www.rainbowkit.com/docs)
-- **Wagmi**: [https://wagmi.sh/react/getting-started](https://wagmi.sh/react/getting-started)
-
-### Testnet Resources
-
-- **Sepolia Faucet**: [https://sepoliafaucet.com/](https://sepoliafaucet.com/)
-- **Sepolia Explorer**: [https://sepolia.etherscan.io/](https://sepolia.etherscan.io/)
-- **Alchemy RPC**: [https://www.alchemy.com/](https://www.alchemy.com/)
-
----
-
-## 🤝 Contributing
-
-Contributions are welcome! Please follow these guidelines:
-
-### Getting Started
-
-1. **Fork the repository**
-   ```bash
-   # Click "Fork" on GitHub
-   ```
-
-2. **Clone your fork**
-   ```bash
-   git clone https://github.com/YourUsername/private-rental-matching.git
-   cd private-rental-matching
-   ```
-
-3. **Create a feature branch**
-   ```bash
-   git checkout -b feature/amazing-feature
-   ```
-
-4. **Make your changes**
-   ```bash
-   # Make changes
-   npm run lint:fix
-   npm run prettier:write
-   npm test
-   ```
-
-5. **Commit with conventional commits**
-   ```bash
-   git commit -m "feat: add amazing feature"
-   # Format: type(scope): description
-   # Types: feat, fix, docs, style, refactor, test, chore
-   ```
-
-6. **Push to your fork**
-   ```bash
-   git push origin feature/amazing-feature
-   ```
-
-7. **Open a Pull Request**
-   - Go to the original repository
-   - Click "New Pull Request"
-   - Describe your changes
-
-### Development Guidelines
-
-- Follow existing code style (enforced by Prettier)
-- Write tests for new features
-- Update documentation as needed
-- Ensure all tests pass (`npm test`)
-- Run security checks (`npm run security:check`)
-
----
-
-## 📄 License
-
-This project is licensed under the **MIT License**.
-
-```
-MIT License
-
-Copyright (c) 2025 Private Rental Matching Team
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-```
-
-See the [LICENSE](LICENSE) file for full details.
-
----
-
-## 🙏 Acknowledgments
-
-### Technology Partners
-
-- **[Zama](https://www.zama.ai/)** - For providing the groundbreaking fhEVM technology and making privacy-preserving smart contracts possible
-- **[OpenZeppelin](https://www.openzeppelin.com/)** - For security best practices and audited contract libraries
-- **[Ethereum Foundation](https://ethereum.org/)** - For the Sepolia testnet infrastructure
-
-### Open Source Community
-
-- **[Hardhat](https://hardhat.org/)** - For the excellent Ethereum development environment
-- **[Next.js](https://nextjs.org/)** - For the powerful React framework
-- **[RainbowKit](https://www.rainbowkit.com/)** - For the beautiful wallet connection UI
-- **[Wagmi](https://wagmi.sh/)** - For the comprehensive React hooks for Ethereum
-- **[Tailwind CSS](https://tailwindcss.com/)** - For the utility-first CSS framework
-
-### Inspiration
-
-Built to demonstrate the power of Fully Homomorphic Encryption in solving real-world privacy challenges in the rental housing market.
-
----
-
-## ❓ Troubleshooting
-
-### Common Issues
-
-**Issue: Compilation fails**
 ```bash
-# Solution: Clean and reinstall
-npm run clean
-rm -rf node_modules package-lock.json
-npm install
-npm run compile
-```
+# Run all tests
+npm test
 
-**Issue: Tests fail with FHE errors**
-```bash
-# Solution: FHE operations require proper setup
-# Many tests (35/46) need FHE mocking - this is expected
-# See TESTING.md for details
-```
+# Run contract tests
+npm run test:contracts
 
-**Issue: Transaction fails with "insufficient funds"**
-```bash
-# Solution: Get Sepolia ETH from faucet
-# Visit: https://sepoliafaucet.com/
-```
+# Run SDK tests
+npm run test:sdk
 
-**Issue: MetaMask not connecting**
-```bash
-# Solution: Check network configuration
-# Ensure MetaMask is on Sepolia network (Chain ID: 11155111)
-# Add network manually if needed
+# Test coverage
+npm run test:coverage
 ```
-
-**Issue: Contract address not found**
-```bash
-# Solution: Update .env with deployed address
-CONTRACT_ADDRESS=0x980051585b6DC385159BD53B5C78eb7B91b848E5
-NEXT_PUBLIC_CONTRACT_ADDRESS=0x980051585b6DC385159BD53B5C78eb7B91b848E5
-```
-
-For more troubleshooting help, see [DEPLOYMENT.md](./DEPLOYMENT.md#troubleshooting).
 
 ---
 
-## 📞 Support
+## Tech Stack
 
-### Get Help
-
-- **GitHub Issues**: [Open an issue](https://github.com/YourUsername/private-rental-matching/issues)
-- **Documentation**: Check the [docs](./DEPLOYMENT.md) first
-- **Zama Discord**: [Join community](https://discord.com/invite/zama)
-
-### Reporting Bugs
-
-When reporting bugs, please include:
-
-1. **Environment**: Node version, OS, browser
-2. **Steps to reproduce**: Clear steps to reproduce the issue
-3. **Expected behavior**: What you expected to happen
-4. **Actual behavior**: What actually happened
-5. **Logs**: Relevant error messages or logs
-6. **Screenshots**: If applicable
+- **Frontend**: Next.js 14, React 18, TypeScript, Tailwind CSS
+- **Web3**: wagmi, viem, RainbowKit
+- **FHE**: Zama fhEVM SDK
+- **Smart Contracts**: Solidity, Hardhat
+- **Deployment**: Vercel
 
 ---
 
-## ⚠️ Disclaimer
+## Zama Bounty Program
 
-**Important Notice:**
+This project is submitted for the Zama FHEVM SDK Bounty.
 
-This is **experimental software** built for educational and demonstration purposes.
+### Requirements Met:
+- Universal SDK package importable into any application
+- Initialization, encryption, and decryption utilities
+- EIP-712 signature support for userDecrypt
+- Wagmi-like modular API structure
+- Reusable components for common scenarios
+- Clean, well-documented, and extensible code
+- Complete setup from root directory
+- Example templates with Next.js
+- Video demonstration
+- Deployment links in README
 
-- ⚠️ **Not audited**: The smart contract has not undergone a professional security audit
-- ⚠️ **Testnet only**: Currently deployed on Sepolia testnet, not production-ready
-- ⚠️ **Use at your own risk**: No guarantees or warranties provided
-- ⚠️ **No real value**: Do not send real ETH or use for actual rental agreements
-
-**Before mainnet deployment:**
-
-1. ✅ Complete professional security audit
-2. ✅ Extensive testing with real users
-3. ✅ Legal review of smart contract logic
-4. ✅ Insurance and liability coverage
-5. ✅ Compliance with local regulations
-
-Always **DYOR** (Do Your Own Research) and review smart contract code before interacting with it.
+See [BOUNTY_SUBMISSION.md](./BOUNTY_SUBMISSION.md) for detailed checklist.
 
 ---
 
-## 🌟 Star History
+## Contributing
 
-If you find this project useful, please consider giving it a ⭐ on GitHub!
+Contributions are welcome! Please follow these steps:
 
-[![Star History Chart](https://api.star-history.com/svg?repos=YourUsername/private-rental-matching&type=Date)](https://star-history.com/#YourUsername/private-rental-matching&Date)
+1. Fork the repository
+2. Create a feature branch (git checkout -b feature/amazing-feature)
+3. Commit your changes (git commit -m 'Add amazing feature')
+4. Push to the branch (git push origin feature/amazing-feature)
+5. Open a Pull Request
 
 ---
 
-<div align="center">
+## License
 
-**Built with ❤️ for privacy-preserving Web3**
+MIT License - see [LICENSE](./LICENSE) for details.
 
-Powered by [Zama fhEVM](https://www.zama.ai/) | [Next.js](https://nextjs.org/) | [Hardhat](https://hardhat.org/)
+---
 
-[⬆ Back to Top](#-private-rental-matching-platform)
+## Acknowledgments
 
-</div>
+- Zama for creating fhEVM and hosting this bounty
+- wagmi and RainbowKit for API design inspiration
+- Next.js team for the excellent framework
+- Community for feedback and support
+
+---
+
+## Support
+
+For questions and support:
+- Open an issue on GitHub
+- Check the [documentation](./SETUP_GUIDE.md)
+- Explore the [examples directory](./examples/)
+- Review the [SDK documentation](./packages/fhevm-sdk/README.md)
+
+---
+
+**Built for privacy-preserving Web3**
