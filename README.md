@@ -15,7 +15,7 @@ A decentralized rental matching platform where all sensitive information (rental
 
 **Live Application**: [Live](https://private-rental-matching.vercel.app/)
 
-**Demo Video**: [demo.mp4] 
+**Demo Video**: [demo.mp4](https://streamable.com/k387r9)
 
 **Smart Contract**: [0x980051585b6DC385159BD53B5C78eb7B91b848E5](https://sepolia.etherscan.io/address/0x980051585b6DC385159BD53B5C78eb7B91b848E5)
 
